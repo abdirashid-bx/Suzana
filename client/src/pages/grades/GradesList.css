@@ -1,0 +1,271 @@
+.grades-page {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+    gap: var(--spacing-md);
+    color: var(--color-gray-500);
+}
+
+.grades-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--spacing-lg);
+}
+
+.grade-card {
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.grade-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    cursor: pointer;
+}
+
+.grade-card-header {
+    padding: var(--spacing-md) var(--spacing-lg);
+    background: linear-gradient(135deg, var(--color-maroon) 0%, var(--color-maroon-dark) 100%);
+    color: var(--color-white);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.grade-title-link {
+    text-decoration: none;
+    color: inherit;
+    flex: 1;
+}
+
+.grade-title-link:hover h3 {
+    text-decoration: underline;
+}
+
+.grade-card-header h3 {
+    margin: 0;
+    font-size: 1.125rem;
+    color: var(--color-white);
+}
+
+.grade-actions {
+    display: flex;
+    gap: var(--spacing-xs);
+}
+
+.grade-actions .btn-icon {
+    color: rgba(255, 255, 255, 0.8);
+    padding: 4px;
+}
+
+.grade-actions .btn-icon:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: var(--color-white);
+}
+
+.grade-actions .text-danger:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.grade-card-body {
+    padding: var(--spacing-lg);
+}
+
+.grade-description {
+    font-size: 0.875rem;
+    color: var(--color-gray-600);
+    margin: 0 0 var(--spacing-md);
+}
+
+.grade-stats {
+    display: flex;
+    gap: var(--spacing-lg);
+    padding: var(--spacing-sm) 0;
+    border-top: 1px solid var(--color-gray-200);
+    border-bottom: 1px solid var(--color-gray-200);
+    margin-bottom: var(--spacing-md);
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-size: 0.875rem;
+    color: var(--color-gray-600);
+}
+
+.stat-item svg {
+    color: var(--color-gold);
+}
+
+.classrooms-count {
+    color: var(--color-navy);
+}
+
+.grade-teacher {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: 0.875rem;
+    margin-bottom: var(--spacing-md);
+}
+
+.grade-teacher .label {
+    color: var(--color-gray-500);
+}
+
+.grade-teacher .name {
+    font-weight: 500;
+    color: var(--color-gray-800);
+}
+
+.classrooms-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+}
+
+.classroom-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: 6px 12px;
+    background: var(--color-gray-100);
+    border-radius: var(--radius-full);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--color-gray-700);
+}
+
+.classroom-badge .capacity {
+    font-size: 0.75rem;
+    padding: 2px 6px;
+    background: var(--color-white);
+    border-radius: var(--radius-sm);
+    color: var(--color-gray-500);
+}
+
+.form-textarea {
+    width: 100%;
+    padding: 10px 14px;
+    font-size: 0.9375rem;
+    color: var(--color-gray-800);
+    background-color: var(--color-white);
+    border: 1px solid var(--color-gray-300);
+    border-radius: var(--radius-md);
+    resize: vertical;
+}
+
+.form-textarea:focus {
+    outline: none;
+    border-color: var(--color-maroon);
+    box-shadow: 0 0 0 3px rgba(114, 47, 55, 0.1);
+}
+
+@media (max-width: 768px) {
+    .grades-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Shared Modal Styles (for Delete Confirmation) */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(2px);
+}
+
+.modal-content {
+    background: white;
+    padding: var(--spacing-xl);
+    border-radius: var(--radius-lg);
+    width: 100%;
+    max-width: 400px;
+    box-shadow: var(--shadow-xl);
+    text-align: center;
+    animation: modalSlideIn 0.2s ease-out;
+}
+
+@keyframes modalSlideIn {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.modal-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: #FEE2E2;
+    color: #DC2626;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin: 0 auto var(--spacing-md);
+}
+
+.modal-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--color-dark);
+    margin-bottom: var(--spacing-sm);
+}
+
+.modal-message {
+    color: var(--color-gray-500);
+    margin-bottom: var(--spacing-xl);
+    line-height: 1.5;
+}
+
+.modal-actions {
+    display: flex;
+    gap: var(--spacing-md);
+    justify-content: center;
+}
+
+.btn-cancel {
+    background: var(--color-gray-100);
+    color: var(--color-gray-600);
+}
+
+.btn-cancel:hover {
+    background: var(--color-gray-200);
+}
+
+.btn-confirm-delete {
+    background: #DC2626;
+    color: white;
+    border: none;
+    padding: var(--spacing-sm) var(--spacing-lg);
+    border-radius: var(--radius-md);
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color var(--transition-fast);
+}
+
+.btn-confirm-delete:hover {
+    background: #B91C1C;
+}

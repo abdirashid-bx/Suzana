@@ -1,0 +1,140 @@
+.finance-page {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
+.finance-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: var(--spacing-md);
+}
+
+.summary-card {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg);
+    background: var(--color-white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--color-gray-200);
+}
+
+.summary-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.summary-card.collected .summary-icon {
+    background: var(--color-success-light);
+    color: var(--color-success);
+}
+
+.summary-card.outstanding .summary-icon {
+    background: var(--color-warning-light);
+    color: var(--color-warning);
+}
+
+.summary-card.expected .summary-icon {
+    background: var(--color-info-light);
+    color: var(--color-info);
+}
+
+.summary-card.rate .summary-icon {
+    background: rgba(114, 47, 55, 0.1);
+    color: var(--color-maroon);
+}
+
+.summary-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.summary-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-gray-900);
+}
+
+.summary-label {
+    font-size: 0.8125rem;
+    color: var(--color-gray-500);
+}
+
+.filter-tabs {
+    display: flex;
+    gap: var(--spacing-xs);
+    background: var(--color-gray-100);
+    padding: 4px;
+    border-radius: var(--radius-md);
+}
+
+.tab {
+    padding: 8px 16px;
+    border: none;
+    background: transparent;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-gray-600);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.tab.active {
+    background: var(--color-white);
+    color: var(--color-maroon);
+    box-shadow: var(--shadow-sm);
+}
+
+.student-cell {
+    display: flex;
+    flex-direction: column;
+}
+
+.student-cell .name {
+    font-weight: 500;
+    color: var(--color-gray-900);
+}
+
+.student-cell .admission {
+    font-size: 0.75rem;
+    color: var(--color-gray-500);
+}
+
+.amount {
+    font-weight: 600;
+    color: var(--color-gray-900);
+}
+
+.capitalize {
+    text-transform: capitalize;
+}
+
+.receipt {
+    font-family: monospace;
+    font-size: 0.8125rem;
+    color: var(--color-gray-600);
+}
+
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+    gap: var(--spacing-md);
+    color: var(--color-gray-500);
+}
+
+@media (max-width: 768px) {
+    .finance-summary {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
