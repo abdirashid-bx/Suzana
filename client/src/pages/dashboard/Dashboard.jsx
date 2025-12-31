@@ -174,7 +174,7 @@ const Dashboard = () => {
                 </div>
                 <div className="quick-actions">
                     {canManageStudents() && (
-                        <Link to="/students/new" className="btn btn-primary">
+                        <Link to="/students/new" className="btn btn-primary ">
                             <FiUsers /> New Student
                         </Link>
                     )}
