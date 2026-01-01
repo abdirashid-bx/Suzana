@@ -35,7 +35,7 @@ const Login = () => {
     return (
         <div className="login-page">
             <div className="login-container">
-                <div className="login-branding">
+                {/* <div className="login-branding">
                     <div className="login-logo-container">
                         <img
                             src="/logo.jpg"
@@ -52,9 +52,16 @@ const Login = () => {
                         <span className="dot">•</span>
                         <span>Teamwork</span>
                     </div>
-                </div>
+                </div> */}
 
                 <div className="login-card">
+                     <div className="logo-container">
+                        <img
+                            src="/logo.jpg"
+                            alt="Suzana Education Center"
+                            className="card-logo"
+                        />
+                    </div>
                     <div className="login-card-header">
                         <h2>Welcome Back</h2>
                         <p>Sign in to access your dashboard</p>

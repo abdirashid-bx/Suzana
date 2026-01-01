@@ -1,5 +1,5 @@
 .login-page {
-    min-height: 100vh;
+    max-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -7,7 +7,7 @@
     padding: var(--spacing-lg);
 }
 
-.login-container {
+/* .login-container {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -61,6 +61,19 @@
 
 .login-motto .dot {
     opacity: 0.6;
+} */
+ .card-logo {
+    display: block;           /* Waa muhiim si margin loogu shaqeeyo */
+    margin: auto; /* 0=top, auto=left/right (center), 20px=bottom gap */
+    width: 200px;          /* Hagaaji size-ka aad rabto (tusaale 80px ama 100px) */
+    height: auto;             /* Ilaali saamiga sawirka */
+}
+.login-container { /* Isticmaal magaca class-kaaga saxda ah */
+    padding: 40px;
+    border-radius: 20px;
+    width: 100%;           
+    max-width: 550px;      
+    margin: 0 auto;        
 }
 
 .login-card {
