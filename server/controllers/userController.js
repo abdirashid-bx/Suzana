@@ -106,7 +106,7 @@ exports.createUser = async (req, res) => {
 // @access  Private/Admin
 exports.updateUser = async (req, res) => {
     try {
-        const { username, email, fullName, role, phone, assignedGrade, isActive } = req.body;
+        const { username, email, password, fullName, role, phone, assignedGrade, isActive } = req.body;
 
         const user = await User.findById(req.params.id);
         if (!user) {
@@ -130,7 +130,10 @@ exports.updateUser = async (req, res) => {
         if (role) user.role = role;
         if (phone !== undefined) user.phone = phone;
         if (assignedGrade !== undefined) user.assignedGrade = assignedGrade;
+        if (phone !== undefined) user.phone = phone;
+        if (assignedGrade !== undefined) user.assignedGrade = assignedGrade;
         if (isActive !== undefined) user.isActive = isActive;
+        if (password) user.password = password; // Will be hashed by pre-save hook
 
         await user.save();
 
