@@ -53,7 +53,20 @@ app.use((req, res, next) => {
 });
 
 // Error handler
+// Error handler
 app.use((err, req, res, next) => {
+    // Log to file
+    const fs = require('fs');
+    const path = require('path');
+    const logPath = path.join(__dirname, 'server_error.log');
+    const timestamp = new Date().toISOString();
+    const logMessage = `\n[${timestamp}] [GLOBAL ERROR] ${req.method} ${req.originalUrl}\n${err.stack || err.message}\n-------------------`;
+    try {
+        fs.appendFileSync(logPath, logMessage);
+    } catch (e) {
+        console.error("Failed to write to log file:", e);
+    }
+
     console.error(err.stack);
     res.status(err.status || 500).json({
         message: err.message || 'Internal Server Error',

@@ -2,6 +2,16 @@ const Student = require('../models/Student');
 const Classroom = require('../models/Classroom');
 const Grade = require('../models/Grade');
 const Fee = require('../models/Fee');
+const fs = require('fs');
+const path = require('path');
+
+const logError = (context, error) => {
+    const logPath = path.join(__dirname, '../server_error.log');
+    const timestamp = new Date().toISOString();
+    const logMessage = `\n[${timestamp}] ${context}\n${error.stack || error.message}\n-------------------`;
+    fs.appendFileSync(logPath, logMessage);
+    console.error(context, error);
+};
 
 // Helper: Find or create classroom with available space
 const findOrCreateClassroom = async (gradeId) => {
@@ -61,12 +71,13 @@ exports.getStudents = async (req, res) => {
         const students = await Student.find(query)
             .populate('grade', 'name order')
             .populate('classroom', 'name suffix')
-            .sort(sortOptions);
+            .sort(sortOptions)
+            .lean();
 
         res.json({ success: true, count: students.length, students });
     } catch (error) {
-        console.error('Get students error:', error);
-        res.status(500).json({ message: 'Server error' });
+        logError('Get students error:', error);
+        res.status(500).json({ message: 'Server error', error: error.message });
     }
 };
 
@@ -75,22 +86,32 @@ exports.getStudents = async (req, res) => {
 // @access  Private
 exports.getStudent = async (req, res) => {
     try {
+        console.log(`[DEBUG] Fetching student details for ID: ${req.params.id}`);
+
         const student = await Student.findById(req.params.id)
             .populate('grade', 'name order')
             .populate('classroom', 'name suffix')
-            .populate('registeredBy', 'fullName');
+            .populate('registeredBy', 'fullName')
+            .lean();
 
         if (!student) {
+            console.log(`[DEBUG] Student not found for ID: ${req.params.id}`);
             return res.status(404).json({ message: 'Student not found' });
         }
 
         // Get fee records
-        const fees = await Fee.find({ student: student._id }).sort({ createdAt: -1 });
+        let fees = [];
+        try {
+            fees = await Fee.find({ student: student._id }).sort({ createdAt: -1 }).lean();
+        } catch (feeError) {
+            logError('[ERROR] Failed to fetch fees for student:', feeError);
+            // Don't fail the whole request if fees fail
+        }
 
         res.json({ success: true, student, fees });
     } catch (error) {
-        console.error('Get student error:', error);
-        res.status(500).json({ message: 'Server error' });
+        logError('[ERROR] Get student error:', error);
+        res.status(500).json({ message: 'Server error', error: error.message, stack: error.stack });
     }
 };
 
@@ -105,6 +126,7 @@ exports.createStudent = async (req, res) => {
             gender,
             dateOfBirth,
             grade,
+            classroom,
             parent,
             initialFee
         } = req.body;
@@ -123,8 +145,19 @@ exports.createStudent = async (req, res) => {
             return res.status(400).json({ message: 'Admission number already exists' });
         }
 
-        // Find or create classroom
-        const classroom = await findOrCreateClassroom(grade);
+        // Validate classroom
+        if (!classroom) {
+            return res.status(400).json({ message: 'Classroom is required' });
+        }
+
+        const selectedClassroom = await Classroom.findById(classroom);
+        if (!selectedClassroom) {
+            return res.status(400).json({ message: 'Invalid classroom selected' });
+        }
+
+        if (selectedClassroom.grade.toString() !== grade) {
+            return res.status(400).json({ message: 'Classroom does not belong to the selected grade' });
+        }
 
         // Handle photo upload
         let photoPath = null;
@@ -139,7 +172,7 @@ exports.createStudent = async (req, res) => {
             gender,
             dateOfBirth,
             grade,
-            classroom: classroom._id,
+            classroom: selectedClassroom._id,
             parent,
             initialFee,
             photo: photoPath,
@@ -147,8 +180,8 @@ exports.createStudent = async (req, res) => {
         });
 
         // Update classroom count
-        classroom.currentCount += 1;
-        await classroom.save();
+        selectedClassroom.currentCount += 1;
+        await selectedClassroom.save();
 
         // Create initial fee record as outstanding
         await Fee.create({
@@ -167,7 +200,7 @@ exports.createStudent = async (req, res) => {
         res.status(201).json({ success: true, student: populatedStudent });
     } catch (error) {
         console.error('Create student error:', error);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: error.message || 'An unexpected error occurred' });
     }
 };
 
@@ -176,6 +209,7 @@ exports.createStudent = async (req, res) => {
 // @access  Private/Admin
 exports.updateStudent = async (req, res) => {
     try {
+        console.log(`[DEBUG] Updating student: ${req.params.id}`);
         const student = await Student.findById(req.params.id);
         if (!student) {
             return res.status(404).json({ message: 'Student not found' });
@@ -193,16 +227,41 @@ exports.updateStudent = async (req, res) => {
             updates.photo = `/uploads/photos/${req.file.filename}`;
         }
 
-        // If grade is changing, handle classroom transfer
+        // Handle Grade/Classroom changes
         if (updates.grade && updates.grade !== student.grade.toString()) {
+            console.log(`[DEBUG] Grade changed from ${student.grade} to ${updates.grade}`);
+
             // Decrease old classroom count
             await Classroom.findByIdAndUpdate(student.classroom, {
                 $inc: { currentCount: -1 }
             });
 
-            // Find new classroom
-            const newClassroom = await findOrCreateClassroom(updates.grade);
-            updates.classroom = newClassroom._id;
+            // Require new classroom
+            if (!updates.classroom) {
+                return res.status(400).json({ message: 'Classroom is required when changing grade' });
+            }
+
+            const newClassroom = await Classroom.findById(updates.classroom);
+            if (!newClassroom) {
+                return res.status(400).json({ message: 'Invalid classroom selected' });
+            }
+            if (newClassroom.grade.toString() !== updates.grade) {
+                return res.status(400).json({ message: 'Classroom does not belong to the selected grade' });
+            }
+
+            newClassroom.currentCount += 1;
+            await newClassroom.save();
+        } else if (updates.classroom && updates.classroom !== student.classroom.toString()) {
+            console.log(`[DEBUG] Classroom changed from ${student.classroom} to ${updates.classroom}`);
+
+            // Decrease old classroom count
+            await Classroom.findByIdAndUpdate(student.classroom, {
+                $inc: { currentCount: -1 }
+            });
+
+            const newClassroom = await Classroom.findById(updates.classroom);
+            if (!newClassroom) return res.status(400).json({ message: 'Invalid classroom' });
+
             newClassroom.currentCount += 1;
             await newClassroom.save();
         }
@@ -213,12 +272,17 @@ exports.updateStudent = async (req, res) => {
             { new: true, runValidators: true }
         )
             .populate('grade', 'name')
-            .populate('classroom', 'name');
+            .populate('classroom', 'name')
+            .lean();
 
         res.json({ success: true, student: updatedStudent });
     } catch (error) {
-        console.error('Update student error:', error);
-        res.status(500).json({ message: 'Server error' });
+        logError('[ERROR] Update student error:', error);
+        // Return actual error message for debugging in UI
+        res.status(500).json({
+            message: error.message || 'Server error',
+            error: error.message
+        });
     }
 };
 
@@ -245,7 +309,7 @@ exports.deleteStudent = async (req, res) => {
         res.json({ success: true, message: 'Student deleted successfully' });
     } catch (error) {
         console.error('Delete student error:', error);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: error.message || 'An unexpected error occurred' });
     }
 };
 
@@ -264,7 +328,7 @@ exports.getStudentsByClassroom = async (req, res) => {
         res.json({ success: true, count: students.length, students });
     } catch (error) {
         console.error('Get students by classroom error:', error);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: error.message || 'An unexpected error occurred' });
     }
 };
 
@@ -288,6 +352,6 @@ exports.getNextAdmissionNo = async (req, res) => {
         res.json({ success: true, admissionNo });
     } catch (error) {
         console.error('Get next admission no error:', error);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: error.message || 'An unexpected error occurred' });
     }
 };

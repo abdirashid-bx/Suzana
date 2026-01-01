@@ -6,12 +6,19 @@ const {
     createUser,
     updateUser,
     deleteUser,
-    resetPassword
+    resetPassword,
+    getMe,
+    updateMe
 } = require('../controllers/userController');
 const { protect, authorize, canDelete } = require('../middleware/auth');
 
 router.use(protect);
-router.use(authorize('super_admin', 'admin'));
+
+// Publicly accessible to all logged in users
+router.get('/profile', getMe);
+router.put('/profile', updateMe);
+
+router.use(authorize('admin'));
 
 router.route('/')
     .get(getUsers)

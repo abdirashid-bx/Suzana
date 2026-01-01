@@ -143,6 +143,18 @@
     font-size: 0.8125rem;
     font-weight: 500;
     color: var(--color-gray-700);
+    transition: all var(--transition-fast);
+}
+
+.classroom-badge:hover {
+    background: var(--color-gray-200);
+    transform: translateY(-1px);
+}
+
+.classroom-badge.selected {
+    background: var(--color-maroon);
+    color: var(--color-white);
+    box-shadow: 0 2px 8px rgba(114, 47, 55, 0.3);
 }
 
 .classroom-badge .capacity {
@@ -270,40 +282,46 @@
     background: #B91C1C;
 }
 
-.grade-stats-grid{
-   display: grid;
-   grid-template-columns: 1fr 1fr 1fr;
-   gap: 20px;
+.grade-stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px;
 }
-.stat-icon{
+
+.stat-icon {
     padding: 5px;
-    
+
 }
-.stat-card:hover{
-    .stat-icon{
+
+.stat-card:hover {
+    .stat-icon {
         background-color: var(--color-maroon);
         color: var(--color-white);
     }
 }
-.search-input-grade{
+
+.search-input-grade {
     margin: 10px;
     border-radius: 20px;
     width: 400px;
 }
-.search-input:focus{
+
+.search-input:focus {
     width: 450px;
     outline: none;
     background: white;
     border-color: var(--color-maroon);
     box-shadow: 0 0 0 3px rgba(114, 47, 55, 0.1);
 }
-.search-icn{
-     position: absolute;
+
+.search-icn {
+    position: absolute;
     left: 20px;
     color: var(--color-gray-400);
     font-size: 1.1rem;
 
 }
-.Regester-card{
+
+.Regester-card {
     padding: 20px;
 }

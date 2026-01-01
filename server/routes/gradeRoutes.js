@@ -14,13 +14,13 @@ router.use(protect);
 
 router.route('/')
     .get(getGrades)
-    .post(authorize('super_admin', 'admin'), createGrade);
+    .post(authorize('admin'), createGrade);
 
 router.route('/:id')
     .get(getGrade)
-    .put(authorize('super_admin', 'admin', 'head_teacher'), updateGrade)
+    .put(authorize('admin', 'head_teacher'), updateGrade)
     .delete(canDelete, deleteGrade);
 
-router.post('/:id/promote', authorize('super_admin', 'admin'), promoteStudents);
+router.post('/:id/promote', authorize('admin'), promoteStudents);
 
 module.exports = router;

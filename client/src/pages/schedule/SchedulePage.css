@@ -65,6 +65,13 @@
     padding: var(--spacing-sm);
     border-radius: var(--radius-md);
     border-left: 3px solid transparent;
+    position: relative;
+    transition: all var(--transition-fast);
+}
+
+.period-card:hover {
+    transform: translateX(2px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .period-time {
@@ -84,6 +91,68 @@
     font-size: 0.625rem;
     text-transform: uppercase;
     color: var(--color-gray-400);
+}
+
+.period-actions {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: flex;
+    gap: 4px;
+    opacity: 0;
+    transition: opacity var(--transition-fast);
+}
+
+.period-card:hover .period-actions {
+    opacity: 1;
+}
+
+.btn-icon-small {
+    padding: 4px;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid var(--color-gray-200);
+    border-radius: var(--radius-sm);
+    color: var(--color-gray-600);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast);
+}
+
+.btn-icon-small:hover {
+    background: var(--color-white);
+    color: var(--color-maroon);
+    border-color: var(--color-maroon);
+}
+
+.btn-danger-icon:hover {
+    color: var(--color-danger);
+    border-color: var(--color-danger);
+}
+
+.btn-add-period {
+    width: 100%;
+    padding: var(--spacing-sm);
+    margin-top: var(--spacing-xs);
+    background: transparent;
+    border: 2px dashed var(--color-gray-300);
+    border-radius: var(--radius-md);
+    color: var(--color-gray-500);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-xs);
+    transition: all var(--transition-fast);
+}
+
+.btn-add-period:hover {
+    background: var(--color-maroon);
+    border-color: var(--color-maroon);
+    color: var(--color-white);
 }
 
 .type-class {
@@ -163,6 +232,39 @@
     color: var(--color-gray-500);
 }
 
+/* Schedule Modal Styles */
+.schedule-modal {
+    max-width: 500px;
+    width: 90%;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-md);
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    color: var(--color-gray-500);
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-sm);
+    transition: all var(--transition-fast);
+}
+
+.modal-close:hover {
+    background: var(--color-gray-100);
+    color: var(--color-gray-800);
+}
+
 @media (max-width: 1200px) {
     .schedule-grid {
         grid-template-columns: repeat(3, 1fr);
@@ -177,5 +279,9 @@
     .page-header {
         flex-direction: column;
         gap: var(--spacing-md);
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
     }
 }

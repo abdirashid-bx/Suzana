@@ -33,7 +33,7 @@ exports.getFees = async (req, res) => {
         res.json({ success: true, count: fees.length, fees, totals });
     } catch (error) {
         console.error('Get fees error:', error);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: error.message || 'An unexpected error occurred' });
     }
 };
 
@@ -65,7 +65,7 @@ exports.getStudentFees = async (req, res) => {
         });
     } catch (error) {
         console.error('Get student fees error:', error);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: error.message || 'An unexpected error occurred' });
     }
 };
 
@@ -101,7 +101,7 @@ exports.createFee = async (req, res) => {
         res.status(201).json({ success: true, fee: populatedFee });
     } catch (error) {
         console.error('Create fee error:', error);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: error.message || 'An unexpected error occurred' });
     }
 };
 
@@ -142,7 +142,7 @@ exports.payFee = async (req, res) => {
         });
     } catch (error) {
         console.error('Pay fee error:', error);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: error.message || 'An unexpected error occurred' });
     }
 };
 
@@ -165,7 +165,7 @@ exports.deleteFee = async (req, res) => {
         res.json({ success: true, message: 'Fee record deleted successfully' });
     } catch (error) {
         console.error('Delete fee error:', error);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: error.message || 'An unexpected error occurred' });
     }
 };
 
@@ -227,7 +227,7 @@ exports.getFeeSummary = async (req, res) => {
         });
     } catch (error) {
         console.error('Get fee summary error:', error);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: error.message || 'An unexpected error occurred' });
     }
 };
 
@@ -256,6 +256,6 @@ exports.getReceipt = async (req, res) => {
         res.json({ success: true, receipt: fee });
     } catch (error) {
         console.error('Get receipt error:', error);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: error.message || 'An unexpected error occurred' });
     }
 };

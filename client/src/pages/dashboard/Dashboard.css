@@ -265,6 +265,12 @@
     padding: var(--spacing-sm);
     background: var(--color-gray-50);
     border-radius: var(--radius-md);
+    border-left: 3px solid var(--color-gray-300);
+    transition: all var(--transition-fast);
+}
+
+.schedule-item:hover {
+    transform: translateX(2px);
 }
 
 .schedule-icon {
@@ -275,6 +281,7 @@
 .schedule-info {
     display: flex;
     flex-direction: column;
+    flex: 1;
 }
 
 .schedule-time {
@@ -286,6 +293,57 @@
     font-size: 0.9375rem;
     font-weight: 500;
     color: var(--color-gray-800);
+}
+
+.schedule-badge {
+    font-size: 0.625rem;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    color: var(--color-gray-600);
+    background: var(--color-gray-200);
+}
+
+/* Period Type Colors */
+.schedule-type-class {
+    background: rgba(114, 47, 55, 0.1);
+    border-left-color: var(--color-maroon);
+}
+
+.schedule-type-class .schedule-badge {
+    background: var(--color-maroon);
+    color: var(--color-white);
+}
+
+.schedule-type-break {
+    background: rgba(212, 168, 75, 0.15);
+    border-left-color: var(--color-gold);
+}
+
+.schedule-type-break .schedule-badge {
+    background: var(--color-gold);
+    color: var(--color-gray-900);
+}
+
+.schedule-type-lunch {
+    background: rgba(16, 185, 129, 0.1);
+    border-left-color: var(--color-success);
+}
+
+.schedule-type-lunch .schedule-badge {
+    background: var(--color-success);
+    color: var(--color-white);
+}
+
+.schedule-type-activity {
+    background: rgba(30, 58, 95, 0.1);
+    border-left-color: var(--color-navy);
+}
+
+.schedule-type-activity .schedule-badge {
+    background: var(--color-navy);
+    color: var(--color-white);
 }
 
 /* Responsive */

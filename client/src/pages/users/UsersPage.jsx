@@ -7,7 +7,7 @@ import '../students/Students.css';
 import './UsersPage.css';
 
 const UsersPage = () => {
-    const { canDelete, isSuperAdmin, user: currentUser } = useAuth();
+    const { canDelete, user: currentUser } = useAuth();
     const [users, setUsers] = useState([]);
     const [grades, setGrades] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -116,13 +116,11 @@ const UsersPage = () => {
 
     const getRoleBadge = (role) => {
         const colors = {
-            super_admin: 'maroon',
-            admin: 'gold',
+            admin: 'maroon',
             head_teacher: 'info',
             teacher: 'success'
         };
         const labels = {
-            super_admin: 'Super Admin',
             admin: 'Admin',
             head_teacher: 'Head Teacher',
             teacher: 'Teacher'
@@ -210,29 +208,17 @@ const UsersPage = () => {
                                         <td>
                                             <div className="table-actions">
                                                 <button
-                                                    className={`btn btn-icon btn-ghost ${(!isSuperAdmin() && user.role === 'super_admin') ? 'disabled-action' : ''}`}
-                                                    onClick={() => {
-                                                        if (isSuperAdmin() || user.role !== 'super_admin') {
-                                                            handleEdit(user);
-                                                        }
-                                                    }}
-                                                    disabled={!isSuperAdmin() && user.role === 'super_admin'}
-                                                    title={!isSuperAdmin() && user.role === 'super_admin' ? "Only Super Admins can edit this user" : "Edit"}
+                                                    className="btn btn-icon btn-ghost"
+                                                    onClick={() => handleEdit(user)}
+                                                    title="Edit"
                                                 >
                                                     <FiEdit2 />
                                                 </button>
                                                 {canDelete() && user._id !== currentUser.id && (
                                                     <button
-                                                        className={`btn btn-icon btn-ghost text-danger ${(!isSuperAdmin() && user.role === 'super_admin') ? 'disabled-action' : ''}`}
-                                                        onClick={() => {
-                                                            if (user.role !== 'super_admin') { // Extra safety, though backend blocks it too
-                                                                handleDelete(user._id, user.fullName);
-                                                            } else {
-                                                                toast.error("Super Admin accounts cannot be deleted");
-                                                            }
-                                                        }}
-                                                        disabled={user.role === 'super_admin'}
-                                                        title={user.role === 'super_admin' ? "Super Admin accounts cannot be deleted" : "Delete"}
+                                                        className="btn btn-icon btn-ghost text-danger"
+                                                        onClick={() => handleDelete(user._id, user.fullName)}
+                                                        title="Delete"
                                                     >
                                                         <FiTrash2 />
                                                     </button>
@@ -343,7 +329,6 @@ const UsersPage = () => {
                                                 onChange={(e) => setFormData({ ...formData, role: e.target.value })}
                                                 required
                                             >
-                                                {isSuperAdmin() && <option value="super_admin">Super Admin</option>}
                                                 <option value="admin">Admin</option>
                                                 <option value="head_teacher">Head Teacher</option>
                                                 <option value="teacher">Teacher</option>

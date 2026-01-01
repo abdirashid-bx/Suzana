@@ -1,5 +1,58 @@
 const User = require('../models/User');
 
+// @desc    Get current user profile
+// @route   GET /api/users/profile
+// @access  Private
+exports.getMe = async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id).select('+visiblePassword');
+        res.json({ success: true, user });
+    } catch (error) {
+        console.error('Get profile error:', error);
+        res.status(500).json({ message: error.message || 'An unexpected error occurred' });
+    }
+};
+
+// @desc    Update current user profile
+// @route   PUT /api/users/profile
+// @access  Private
+exports.updateMe = async (req, res) => {
+    try {
+        const { username, email, fullName, phone, password } = req.body;
+
+        const user = await User.findById(req.user.id);
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Check uniqueness if changing username/email
+        if (username && username !== user.username) {
+            const exists = await User.findOne({ username });
+            if (exists) return res.status(400).json({ message: 'Username already taken' });
+            user.username = username;
+        }
+
+        if (email && email !== user.email) {
+            const exists = await User.findOne({ email });
+            if (exists) return res.status(400).json({ message: 'Email already taken' });
+            user.email = email;
+        }
+
+        if (fullName) user.fullName = fullName;
+        if (phone) user.phone = phone;
+        if (password) user.password = password;
+
+        await user.save();
+
+        res.json({ success: true, user });
+
+    } catch (error) {
+        console.error('Update profile error:', error);
+        res.status(500).json({ message: error.message || 'An unexpected error occurred' });
+    }
+};
+
 // @desc    Get all users
 // @route   GET /api/users
 // @access  Private/Admin
@@ -33,7 +86,7 @@ exports.getUsers = async (req, res) => {
         res.json({ success: true, count: users.length, users });
     } catch (error) {
         console.error('Get users error:', error);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: error.message || 'An unexpected error occurred' });
     }
 };
 
@@ -53,7 +106,7 @@ exports.getUser = async (req, res) => {
         res.json({ success: true, user });
     } catch (error) {
         console.error('Get user error:', error);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: error.message || 'An unexpected error occurred' });
     }
 };
 
@@ -71,8 +124,9 @@ exports.createUser = async (req, res) => {
         }
 
         // RBAC: Check if creator is allowed to assign the requested role
-        if (req.user.role !== 'super_admin' && role === 'super_admin') {
-            return res.status(403).json({ message: 'Only Super Admins can create other Super Admins' });
+        // Only admins can create other admins
+        if (req.user.role !== 'admin' && role === 'admin') {
+            return res.status(403).json({ message: 'Only Admins can create other Admins' });
         }
 
         const user = await User.create({
@@ -82,7 +136,7 @@ exports.createUser = async (req, res) => {
             fullName,
             role,
             phone,
-            assignedGrade: assignedGrade || null
+            assignedGrade: assignedGrade && assignedGrade.trim() !== '' ? assignedGrade : null
         });
 
         res.status(201).json({
@@ -100,7 +154,7 @@ exports.createUser = async (req, res) => {
         if (error.code === 11000) {
             return res.status(400).json({ message: 'Username or email already exists' });
         }
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: error.message || 'An unexpected error occurred' });
     }
 };
 
@@ -117,12 +171,12 @@ exports.updateUser = async (req, res) => {
         }
 
         // RBAC: Check if updater is allowed to edit this user
-        if (req.user.role !== 'super_admin') {
-            if (user.role === 'super_admin') {
-                return res.status(403).json({ message: 'You cannot modify a Super Admin account' });
+        if (req.user.role !== 'admin') {
+            if (user.role === 'admin') {
+                return res.status(403).json({ message: 'You cannot modify an Admin account' });
             }
-            if (role === 'super_admin') {
-                return res.status(403).json({ message: 'You cannot promote a user to Super Admin' });
+            if (role === 'admin') {
+                return res.status(403).json({ message: 'You cannot promote a user to Admin' });
             }
         }
 
@@ -132,9 +186,9 @@ exports.updateUser = async (req, res) => {
         if (fullName) user.fullName = fullName;
         if (role) user.role = role;
         if (phone !== undefined) user.phone = phone;
-        if (assignedGrade !== undefined) user.assignedGrade = assignedGrade;
-        if (phone !== undefined) user.phone = phone;
-        if (assignedGrade !== undefined) user.assignedGrade = assignedGrade;
+        if (assignedGrade !== undefined) {
+            user.assignedGrade = assignedGrade && assignedGrade.trim() !== '' ? assignedGrade : null;
+        }
         if (isActive !== undefined) user.isActive = isActive;
         if (password) user.password = password; // Will be hashed by pre-save hook
 
@@ -143,7 +197,7 @@ exports.updateUser = async (req, res) => {
         res.json({ success: true, user });
     } catch (error) {
         console.error('Update user error:', error);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: error.message || 'An unexpected error occurred' });
     }
 };
 
@@ -168,7 +222,7 @@ exports.deleteUser = async (req, res) => {
         res.json({ success: true, message: 'User deleted successfully' });
     } catch (error) {
         console.error('Delete user error:', error);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: error.message || 'An unexpected error occurred' });
     }
 };
 
@@ -190,6 +244,6 @@ exports.resetPassword = async (req, res) => {
         res.json({ success: true, message: 'Password reset successfully' });
     } catch (error) {
         console.error('Reset password error:', error);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: error.message || 'An unexpected error occurred' });
     }
 };

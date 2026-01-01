@@ -30,7 +30,7 @@ exports.getAttendance = async (req, res) => {
         res.json({ success: true, count: attendance.length, attendance });
     } catch (error) {
         console.error('Get attendance error:', error);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: error.message || 'An unexpected error occurred' });
     }
 };
 
@@ -74,7 +74,7 @@ exports.getAttendanceForMarking = async (req, res) => {
         });
     } catch (error) {
         console.error('Get attendance for marking error:', error);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: error.message || 'An unexpected error occurred' });
     }
 };
 
@@ -123,7 +123,7 @@ exports.markAttendance = async (req, res) => {
         res.json({ success: true, attendance: populatedAttendance });
     } catch (error) {
         console.error('Mark attendance error:', error);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: error.message || 'An unexpected error occurred' });
     }
 };
 
@@ -154,7 +154,7 @@ exports.updateAttendance = async (req, res) => {
         res.json({ success: true, attendance: populatedAttendance });
     } catch (error) {
         console.error('Update attendance error:', error);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: error.message || 'An unexpected error occurred' });
     }
 };
 
@@ -206,7 +206,7 @@ exports.getStudentAttendance = async (req, res) => {
         res.json({ success: true, records: studentRecords, stats });
     } catch (error) {
         console.error('Get student attendance error:', error);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: error.message || 'An unexpected error occurred' });
     }
 };
 
@@ -251,6 +251,6 @@ exports.getAttendanceSummary = async (req, res) => {
         res.json({ success: true, date: queryDate, summary, overall });
     } catch (error) {
         console.error('Get attendance summary error:', error);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: error.message || 'An unexpected error occurred' });
     }
 };

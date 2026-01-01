@@ -62,7 +62,7 @@ exports.login = async (req, res) => {
         });
     } catch (error) {
         console.error('Login error:', error);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: error.message || 'An unexpected error occurred' });
     }
 };
 
@@ -90,7 +90,7 @@ exports.getMe = async (req, res) => {
         });
     } catch (error) {
         console.error('Get me error:', error);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: error.message || 'An unexpected error occurred' });
     }
 };
 
@@ -115,7 +115,7 @@ exports.updatePassword = async (req, res) => {
         res.json({ success: true, message: 'Password updated successfully' });
     } catch (error) {
         console.error('Update password error:', error);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: error.message || 'An unexpected error occurred' });
     }
 };
 

@@ -1,6 +1,5 @@
 require('dotenv').config();
 const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
 const connectDB = require('./config/db');
 
 // Import models
@@ -11,24 +10,33 @@ const Classroom = require('./models/Classroom');
 const seedDatabase = async () => {
     try {
         await connectDB();
-        console.log('Connected to MongoDB...');
+        console.log('Connected to MongoDB...\n');
 
-        // Clear existing data
-        await User.deleteMany({});
-        await Grade.deleteMany({});
-        await Classroom.deleteMany({});
-        console.log('Cleared existing data...');
+        // ⚠️ WARNING: Check if data already exists
+        const existingUsers = await User.countDocuments();
+        const existingGrades = await Grade.countDocuments();
 
-        // Create Super Admin user
-        const superAdmin = await User.create({
-            username: 'superAdmin',
+        if (existingUsers > 0 || existingGrades > 0) {
+            console.log('⚠️  WARNING: Database already contains data!');
+            console.log(`   Users: ${existingUsers}`);
+            console.log(`   Grades: ${existingGrades}`);
+            console.log('\n❌ Seeding cancelled to prevent data loss.');
+            console.log('💡 If you want to reset the database, use: node reset.js\n');
+            process.exit(0);
+        }
+
+        console.log('✅ Database is empty. Proceeding with seed...\n');
+
+        // Create Admin user
+        const adminUser = await User.create({
+            username: 'admin',
             email: 'admin@suzana.edu',
             password: '12345678',
-            fullName: 'Super Administrator',
-            role: 'super_admin',
+            fullName: 'Administrator',
+            role: 'admin',
             isActive: true
         });
-        console.log('Created Super Admin user:', superAdmin.username);
+        console.log('✅ Created Admin user:', adminUser.username);
 
         // Create initial grades
         const gradesData = [
@@ -51,17 +59,17 @@ const seedDatabase = async () => {
                 currentCount: 0
             });
 
-            console.log(`Created grade: ${grade.name} with classroom ${grade.name}-A`);
+            console.log(`✅ Created grade: ${grade.name} with classroom ${grade.name}-A`);
         }
 
         console.log('\n✅ Database seeded successfully!');
         console.log('\n📝 Login credentials:');
-        console.log('   Username: superAdmin');
-        console.log('   Password: 12345678');
+        console.log('   Username: admin');
+        console.log('   Password: 12345678\n');
 
         process.exit(0);
     } catch (error) {
-        console.error('Error seeding database:', error);
+        console.error('❌ Error seeding database:', error);
         process.exit(1);
     }
 };

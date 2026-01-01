@@ -7,7 +7,8 @@ const {
     initializeSchedules,
     updateSchedule,
     deleteSchedule,
-    getTodaySchedule
+    getTodaySchedule,
+    deleteAllByGrade
 } = require('../controllers/scheduleController');
 const { protect, authorize, canDelete } = require('../middleware/auth');
 
@@ -15,14 +16,15 @@ router.use(protect);
 
 router.get('/grade/:gradeId', getScheduleByGrade);
 router.get('/today/:gradeId', getTodaySchedule);
-router.post('/initialize/:gradeId', authorize('super_admin', 'admin'), initializeSchedules);
+router.delete('/grade/:gradeId/all', authorize('admin'), deleteAllByGrade);
+router.post('/initialize/:gradeId', authorize('admin'), initializeSchedules);
 
 router.route('/')
     .get(getSchedules)
-    .post(authorize('super_admin', 'admin'), createSchedule);
+    .post(authorize('admin'), createSchedule);
 
 router.route('/:id')
-    .put(authorize('super_admin', 'admin'), updateSchedule)
+    .put(authorize('admin'), updateSchedule)
     .delete(canDelete, deleteSchedule);
 
 module.exports = router;

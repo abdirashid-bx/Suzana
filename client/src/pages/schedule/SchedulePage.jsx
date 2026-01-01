@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { FiClock, FiRefreshCw } from 'react-icons/fi';
+import { FiClock, FiPlus, FiEdit2, FiTrash2, FiX, FiTrash } from 'react-icons/fi';
 import { gradesAPI, schedulesAPI } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import toast from 'react-hot-toast';
@@ -11,6 +11,17 @@ const SchedulePage = () => {
     const [selectedGrade, setSelectedGrade] = useState('');
     const [schedule, setSchedule] = useState(null);
     const [loading, setLoading] = useState(false);
+
+    // Modal state
+    const [showModal, setShowModal] = useState(false);
+    const [selectedDay, setSelectedDay] = useState('');
+    const [editingPeriodIndex, setEditingPeriodIndex] = useState(null);
+    const [periodForm, setPeriodForm] = useState({
+        startTime: '',
+        endTime: '',
+        activity: '',
+        type: 'class'
+    });
 
     useEffect(() => {
         fetchGrades();
@@ -46,13 +57,116 @@ const SchedulePage = () => {
         }
     };
 
-    const initializeSchedule = async () => {
+
+
+    const handleAddPeriod = (day) => {
+        setSelectedDay(day);
+        setEditingPeriodIndex(null);
+        setPeriodForm({
+            startTime: '',
+            endTime: '',
+            activity: '',
+            type: 'class'
+        });
+        setShowModal(true);
+    };
+
+    const handleEditPeriod = (day, periodIndex, period) => {
+        setSelectedDay(day);
+        setEditingPeriodIndex(periodIndex);
+        setPeriodForm({
+            startTime: period.startTime,
+            endTime: period.endTime,
+            activity: period.activity,
+            type: period.type
+        });
+        setShowModal(true);
+    };
+
+    const handleDeletePeriod = async (day, periodIndex) => {
+        if (!window.confirm('Are you sure you want to delete this period?')) {
+            return;
+        }
+
         try {
-            await schedulesAPI.initialize(selectedGrade);
-            toast.success('Schedule initialized successfully!');
+            const daySchedule = schedule[day];
+            const updatedPeriods = daySchedule.periods.filter((_, index) => index !== periodIndex);
+
+            if (daySchedule._id) {
+                await schedulesAPI.update(daySchedule._id, { periods: updatedPeriods });
+            }
+
+            toast.success('Period deleted successfully');
             fetchSchedule();
         } catch (error) {
-            toast.error('Failed to initialize schedule');
+            toast.error('Failed to delete period');
+        }
+    };
+
+    const handleSavePeriod = async (e) => {
+        e.preventDefault();
+
+        // Validation
+        if (!periodForm.startTime || !periodForm.endTime || !periodForm.activity) {
+            toast.error('Please fill in all fields');
+            return;
+        }
+
+        if (periodForm.startTime >= periodForm.endTime) {
+            toast.error('End time must be after start time');
+            return;
+        }
+
+        try {
+            const daySchedule = schedule[selectedDay];
+            let updatedPeriods = daySchedule?.periods ? [...daySchedule.periods] : [];
+
+            if (editingPeriodIndex !== null) {
+                // Update existing period
+                updatedPeriods[editingPeriodIndex] = periodForm;
+            } else {
+                // Add new period
+                updatedPeriods.push(periodForm);
+                // Sort periods by start time
+                updatedPeriods.sort((a, b) => a.startTime.localeCompare(b.startTime));
+            }
+
+            // Save to backend
+            if (daySchedule?._id) {
+                // Update existing schedule
+                await schedulesAPI.update(daySchedule._id, { periods: updatedPeriods });
+            } else {
+                // Create new schedule
+                await schedulesAPI.create({
+                    grade: selectedGrade,
+                    dayOfWeek: selectedDay,
+                    periods: updatedPeriods
+                });
+            }
+
+            toast.success(editingPeriodIndex !== null ? 'Period updated successfully' : 'Period added successfully');
+            setShowModal(false);
+            fetchSchedule();
+        } catch (error) {
+            toast.error('Failed to save period');
+            console.error(error);
+        }
+    };
+
+    const handleDeleteAll = async () => {
+        const gradeName = grades.find(g => g._id === selectedGrade)?.name;
+
+        if (!window.confirm(`Are you sure you want to delete ALL schedules for ${gradeName}?\n\nThis will remove all periods from Monday to Friday.\n\nThis action cannot be undone.`)) {
+            return;
+        }
+
+        try {
+            await schedulesAPI.deleteAllByGrade(selectedGrade);
+            toast.success(`All schedules deleted for ${gradeName}`);
+            fetchSchedule();
+        } catch (error) {
+            toast.error('Failed to delete schedules');
+            console.error(error);
         }
     };
 
@@ -68,14 +182,6 @@ const SchedulePage = () => {
             case 'activity': return 'type-activity';
             default: return '';
         }
-    };
-
-    const getCurrentPeriod = () => {
-        const now = new Date();
-        const hours = now.getHours();
-        const minutes = now.getMinutes();
-        const currentTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
-        return currentTime;
     };
 
     return (
@@ -99,9 +205,13 @@ const SchedulePage = () => {
                         ))}
                     </select>
 
-                    {isAdmin() && (
-                        <button className="btn btn-secondary" onClick={initializeSchedule}>
-                            <FiRefreshCw /> Initialize Default
+                    {isAdmin() && schedule && Object.values(schedule).some(day => day?.periods?.length > 0) && (
+                        <button
+                            className="btn btn-danger"
+                            onClick={handleDeleteAll}
+                            title="Delete all schedules for this grade"
+                        >
+                            <FiTrash /> Delete All
                         </button>
                     )}
                 </div>
@@ -130,17 +240,40 @@ const SchedulePage = () => {
                                                 {period.activity}
                                             </div>
                                             <span className="period-type">{period.type}</span>
+
+                                            {isAdmin() && (
+                                                <div className="period-actions">
+                                                    <button
+                                                        className="btn-icon-small"
+                                                        onClick={() => handleEditPeriod(day, index, period)}
+                                                        title="Edit period"
+                                                    >
+                                                        <FiEdit2 />
+                                                    </button>
+                                                    <button
+                                                        className="btn-icon-small btn-danger-icon"
+                                                        onClick={() => handleDeletePeriod(day, index)}
+                                                        title="Delete period"
+                                                    >
+                                                        <FiTrash2 />
+                                                    </button>
+                                                </div>
+                                            )}
                                         </div>
                                     ))
                                 ) : (
                                     <div className="no-schedule">
                                         <p>No schedule set</p>
-                                        {isAdmin() && (
-                                            <button className="btn btn-sm btn-ghost" onClick={initializeSchedule}>
-                                                Set Default
-                                            </button>
-                                        )}
                                     </div>
+                                )}
+
+                                {isAdmin() && (
+                                    <button
+                                        className="btn-add-period"
+                                        onClick={() => handleAddPeriod(day)}
+                                    >
+                                        <FiPlus /> Add Period
+                                    </button>
                                 )}
                             </div>
                         </div>
@@ -157,6 +290,85 @@ const SchedulePage = () => {
                     <span className="legend-item type-activity">Activity</span>
                 </div>
             </div>
+
+            {/* Period Modal */}
+            {showModal && (
+                <div className="modal-overlay" onClick={() => setShowModal(false)}>
+                    <div className="modal schedule-modal" onClick={(e) => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h3 className="modal-title">
+                                {editingPeriodIndex !== null ? 'Edit Period' : 'Add New Period'}
+                            </h3>
+                            <button className="modal-close" onClick={() => setShowModal(false)}>
+                                <FiX />
+                            </button>
+                        </div>
+
+                        <form onSubmit={handleSavePeriod}>
+                            <div className="modal-body">
+                                <div className="form-row">
+                                    <div className="form-group">
+                                        <label className="form-label">Start Time *</label>
+                                        <input
+                                            type="time"
+                                            className="form-input"
+                                            value={periodForm.startTime}
+                                            onChange={(e) => setPeriodForm({ ...periodForm, startTime: e.target.value })}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="form-label">End Time *</label>
+                                        <input
+                                            type="time"
+                                            className="form-input"
+                                            value={periodForm.endTime}
+                                            onChange={(e) => setPeriodForm({ ...periodForm, endTime: e.target.value })}
+                                            required
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="form-group">
+                                    <label className="form-label">Activity Name *</label>
+                                    <input
+                                        type="text"
+                                        className="form-input"
+                                        placeholder="e.g., Mathematics, Morning Break"
+                                        value={periodForm.activity}
+                                        onChange={(e) => setPeriodForm({ ...periodForm, activity: e.target.value })}
+                                        required
+                                    />
+                                </div>
+
+                                <div className="form-group">
+                                    <label className="form-label">Period Type *</label>
+                                    <select
+                                        className="form-select"
+                                        value={periodForm.type}
+                                        onChange={(e) => setPeriodForm({ ...periodForm, type: e.target.value })}
+                                        required
+                                    >
+                                        <option value="class">Class</option>
+                                        <option value="break">Break</option>
+                                        <option value="lunch">Lunch</option>
+                                        <option value="activity">Activity</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-ghost" onClick={() => setShowModal(false)}>
+                                    Cancel
+                                </button>
+                                <button type="submit" className="btn btn-primary">
+                                    {editingPeriodIndex !== null ? 'Update Period' : 'Add Period'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

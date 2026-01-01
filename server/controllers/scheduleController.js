@@ -1,25 +1,6 @@
 const Schedule = require('../models/Schedule');
 const Grade = require('../models/Grade');
 
-// Default daily schedule template
-const defaultScheduleTemplate = [
-    { startTime: '08:00', endTime: '09:00', activity: 'Morning Activity', type: 'activity' },
-    { startTime: '09:00', endTime: '09:30', activity: 'Class 1', type: 'class' },
-    { startTime: '09:30', endTime: '09:40', activity: 'Short Break', type: 'break' },
-    { startTime: '09:40', endTime: '10:10', activity: 'Class 2', type: 'class' },
-    { startTime: '10:10', endTime: '10:20', activity: 'Short Break', type: 'break' },
-    { startTime: '10:20', endTime: '10:50', activity: 'Class 3', type: 'class' },
-    { startTime: '10:50', endTime: '11:00', activity: 'Short Break', type: 'break' },
-    { startTime: '11:00', endTime: '11:30', activity: 'Class 4', type: 'class' },
-    { startTime: '11:30', endTime: '11:40', activity: 'Short Break', type: 'break' },
-    { startTime: '11:40', endTime: '12:10', activity: 'Class 5', type: 'class' },
-    { startTime: '12:10', endTime: '12:30', activity: 'Preparation for Lunch', type: 'activity' },
-    { startTime: '12:30', endTime: '14:30', activity: 'Lunch & Nap', type: 'lunch' },
-    { startTime: '14:30', endTime: '15:00', activity: 'Class 6', type: 'class' },
-    { startTime: '15:00', endTime: '15:30', activity: 'Class 7', type: 'class' },
-    { startTime: '15:30', endTime: '15:30', activity: 'Home Time', type: 'activity' }
-];
-
 // @desc    Get all schedules
 // @route   GET /api/schedules
 // @access  Private
@@ -39,7 +20,7 @@ exports.getSchedules = async (req, res) => {
         res.json({ success: true, count: schedules.length, schedules });
     } catch (error) {
         console.error('Get schedules error:', error);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: error.message || 'An unexpected error occurred' });
     }
 };
 
@@ -70,7 +51,7 @@ exports.getScheduleByGrade = async (req, res) => {
         res.json({ success: true, grade, weekSchedule });
     } catch (error) {
         console.error('Get schedule by grade error:', error);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: error.message || 'An unexpected error occurred' });
     }
 };
 
@@ -81,19 +62,23 @@ exports.createSchedule = async (req, res) => {
     try {
         const { grade, dayOfWeek, periods } = req.body;
 
+        if (!periods || periods.length === 0) {
+            return res.status(400).json({ message: 'Periods are required' });
+        }
+
         // Check if schedule exists
         let schedule = await Schedule.findOne({ grade, dayOfWeek });
 
         if (schedule) {
             // Update existing
-            schedule.periods = periods || defaultScheduleTemplate;
+            schedule.periods = periods;
             await schedule.save();
         } else {
             // Create new
             schedule = await Schedule.create({
                 grade,
                 dayOfWeek,
-                periods: periods || defaultScheduleTemplate,
+                periods,
                 createdBy: req.user.id
             });
         }
@@ -107,7 +92,7 @@ exports.createSchedule = async (req, res) => {
         if (error.code === 11000) {
             return res.status(400).json({ message: 'Schedule for this grade and day already exists' });
         }
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: error.message || 'An unexpected error occurred' });
     }
 };
 
@@ -121,32 +106,13 @@ exports.initializeSchedules = async (req, res) => {
             return res.status(404).json({ message: 'Grade not found' });
         }
 
-        const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
-        const createdSchedules = [];
-
-        for (const day of days) {
-            // Check if schedule already exists
-            const existing = await Schedule.findOne({ grade: grade._id, dayOfWeek: day });
-
-            if (!existing) {
-                const schedule = await Schedule.create({
-                    grade: grade._id,
-                    dayOfWeek: day,
-                    periods: defaultScheduleTemplate,
-                    createdBy: req.user.id
-                });
-                createdSchedules.push(schedule);
-            }
-        }
-
-        res.json({
-            success: true,
-            message: `Created ${createdSchedules.length} schedule(s) for ${grade.name}`,
-            schedules: createdSchedules
+        res.status(400).json({
+            success: false,
+            message: 'Please use manual schedule creation. Add periods individually for each day.'
         });
     } catch (error) {
         console.error('Initialize schedules error:', error);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: error.message || 'An unexpected error occurred' });
     }
 };
 
@@ -171,7 +137,7 @@ exports.updateSchedule = async (req, res) => {
         res.json({ success: true, schedule: populatedSchedule });
     } catch (error) {
         console.error('Update schedule error:', error);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: error.message || 'An unexpected error occurred' });
     }
 };
 
@@ -190,7 +156,7 @@ exports.deleteSchedule = async (req, res) => {
         res.json({ success: true, message: 'Schedule deleted successfully' });
     } catch (error) {
         console.error('Delete schedule error:', error);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: error.message || 'An unexpected error occurred' });
     }
 };
 
@@ -219,6 +185,29 @@ exports.getTodaySchedule = async (req, res) => {
         res.json({ success: true, day: today, schedule });
     } catch (error) {
         console.error('Get today schedule error:', error);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: error.message || 'An unexpected error occurred' });
+    }
+};
+
+// @desc    Delete all schedules for a grade
+// @route   DELETE /api/schedules/grade/:gradeId/all
+// @access  Private/Admin
+exports.deleteAllByGrade = async (req, res) => {
+    try {
+        const grade = await Grade.findById(req.params.gradeId);
+        if (!grade) {
+            return res.status(404).json({ message: 'Grade not found' });
+        }
+
+        const result = await Schedule.deleteMany({ grade: req.params.gradeId });
+
+        res.json({
+            success: true,
+            message: `Deleted ${result.deletedCount} schedule(s) for ${grade.name}`,
+            deletedCount: result.deletedCount
+        });
+    } catch (error) {
+        console.error('Delete all schedules error:', error);
+        res.status(500).json({ message: error.message || 'An unexpected error occurred' });
     }
 };

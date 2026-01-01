@@ -1,0 +1,105 @@
+
+[2026-01-01T19:18:42.134Z] [ERROR] Update student error:
+CastError: Cast to date failed for value "[ '2021-02-11', '2021-02-11' ]" (type Array) at path "dateOfBirth"
+    at SchemaDate.cast (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\schema\date.js:379:11)
+    at SchemaType.applySetters (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\schemaType.js:1288:12)
+    at SchemaDate.castForQuery (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\schema\date.js:428:19)
+    at castUpdateVal (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\helpers\query\castUpdate.js:633:19)
+    at walkUpdatePath (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\helpers\query\castUpdate.js:438:24)
+    at castUpdate (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\helpers\query\castUpdate.js:144:7)
+    at model.Query._castUpdate (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\query.js:4874:10)
+    at model.Query._findOneAndUpdate (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\query.js:3497:23)
+    at model.Query.exec (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\query.js:4627:80)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+-------------------
+[2026-01-01T19:23:38.028Z] [ERROR] Update student error:
+CastError: Cast to date failed for value "[ '2021-02-24', '2021-02-24' ]" (type Array) at path "dateOfBirth"
+    at SchemaDate.cast (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\schema\date.js:379:11)
+    at SchemaType.applySetters (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\schemaType.js:1288:12)
+    at SchemaDate.castForQuery (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\schema\date.js:428:19)
+    at castUpdateVal (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\helpers\query\castUpdate.js:633:19)
+    at walkUpdatePath (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\helpers\query\castUpdate.js:438:24)
+    at castUpdate (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\helpers\query\castUpdate.js:144:7)
+    at model.Query._castUpdate (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\query.js:4874:10)
+    at model.Query._findOneAndUpdate (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\query.js:3497:23)
+    at model.Query.exec (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\query.js:4627:80)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+-------------------
+[2026-01-01T19:24:34.429Z] [ERROR] Update student error:
+CastError: Cast to date failed for value "[ '2023-02-08', '2023-02-08' ]" (type Array) at path "dateOfBirth"
+    at SchemaDate.cast (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\schema\date.js:379:11)
+    at SchemaType.applySetters (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\schemaType.js:1288:12)
+    at SchemaDate.castForQuery (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\schema\date.js:428:19)
+    at castUpdateVal (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\helpers\query\castUpdate.js:633:19)
+    at walkUpdatePath (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\helpers\query\castUpdate.js:438:24)
+    at castUpdate (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\helpers\query\castUpdate.js:144:7)
+    at model.Query._castUpdate (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\query.js:4874:10)
+    at model.Query._findOneAndUpdate (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\query.js:3497:23)
+    at model.Query.exec (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\query.js:4627:80)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+-------------------
+[2026-01-01T19:29:56.481Z] [ERROR] Update student error:
+MongoServerError: Plan executor error during findAndModify :: caused by :: E11000 duplicate key error collection: suzana-hub.students index: admissionNo_1 dup key: { admissionNo: "SEC/2025/0007" }
+    at Connection.sendCommand (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongodb\lib\cmap\connection.js:306:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async Connection.command (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongodb\lib\cmap\connection.js:334:26)
+    at async Server.command (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongodb\lib\sdam\server.js:194:29)
+    at async tryOperation (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongodb\lib\operations\execute_operation.js:213:32)
+    at async executeOperation (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongodb\lib\operations\execute_operation.js:78:16)
+    at async Collection.findOneAndUpdate (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongodb\lib\collection.js:544:16)
+    at async model.Query._findOneAndUpdate (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\query.js:3536:13)
+    at async model.Query.exec (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\query.js:4627:63)
+    at async exports.updateStudent (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\controllers\studentController.js:269:32)
+-------------------
+[2026-01-01T19:42:25.469Z] [ERROR] Update student error:
+CastError: Cast to date failed for value "[ '2023-02-08', '2023-02-08' ]" (type Array) at path "dateOfBirth"
+    at SchemaDate.cast (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\schema\date.js:379:11)
+    at SchemaType.applySetters (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\schemaType.js:1288:12)
+    at SchemaDate.castForQuery (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\schema\date.js:428:19)
+    at castUpdateVal (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\helpers\query\castUpdate.js:633:19)
+    at walkUpdatePath (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\helpers\query\castUpdate.js:438:24)
+    at castUpdate (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\helpers\query\castUpdate.js:144:7)
+    at model.Query._castUpdate (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\query.js:4874:10)
+    at model.Query._findOneAndUpdate (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\query.js:3497:23)
+    at model.Query.exec (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\query.js:4627:80)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+-------------------
+[2026-01-01T20:06:37.142Z] [ERROR] Update student error:
+CastError: Cast to date failed for value "[ '2022-01-01', '2022-01-01' ]" (type Array) at path "dateOfBirth"
+    at SchemaDate.cast (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\schema\date.js:379:11)
+    at SchemaType.applySetters (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\schemaType.js:1288:12)
+    at SchemaDate.castForQuery (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\schema\date.js:428:19)
+    at castUpdateVal (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\helpers\query\castUpdate.js:633:19)
+    at walkUpdatePath (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\helpers\query\castUpdate.js:438:24)
+    at castUpdate (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\helpers\query\castUpdate.js:144:7)
+    at model.Query._castUpdate (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\query.js:4874:10)
+    at model.Query._findOneAndUpdate (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\query.js:3497:23)
+    at model.Query.exec (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\query.js:4627:80)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+-------------------
+[2026-01-01T20:14:38.396Z] [ERROR] Update student error:
+CastError: Cast to date failed for value "[ '2022-01-01', '2022-01-01' ]" (type Array) at path "dateOfBirth"
+    at SchemaDate.cast (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\schema\date.js:379:11)
+    at SchemaType.applySetters (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\schemaType.js:1288:12)
+    at SchemaDate.castForQuery (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\schema\date.js:428:19)
+    at castUpdateVal (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\helpers\query\castUpdate.js:633:19)
+    at walkUpdatePath (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\helpers\query\castUpdate.js:438:24)
+    at castUpdate (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\helpers\query\castUpdate.js:144:7)
+    at model.Query._castUpdate (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\query.js:4874:10)
+    at model.Query._findOneAndUpdate (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\query.js:3497:23)
+    at model.Query.exec (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\query.js:4627:80)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+-------------------
+[2026-01-01T20:14:56.535Z] [ERROR] Update student error:
+CastError: Cast to date failed for value "[ '2022-01-01', '2022-01-01' ]" (type Array) at path "dateOfBirth"
+    at SchemaDate.cast (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\schema\date.js:379:11)
+    at SchemaType.applySetters (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\schemaType.js:1288:12)
+    at SchemaDate.castForQuery (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\schema\date.js:428:19)
+    at castUpdateVal (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\helpers\query\castUpdate.js:633:19)
+    at walkUpdatePath (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\helpers\query\castUpdate.js:438:24)
+    at castUpdate (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\helpers\query\castUpdate.js:144:7)
+    at model.Query._castUpdate (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\query.js:4874:10)
+    at model.Query._findOneAndUpdate (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\query.js:3497:23)
+    at model.Query.exec (C:\Users\L\.gemini\antigravity\scratch\Suzana-System\server\node_modules\mongoose\lib\query.js:4627:80)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+-------------------

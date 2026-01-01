@@ -50,7 +50,9 @@ export const usersAPI = {
     create: (data) => api.post('/users', data),
     update: (id, data) => api.put(`/users/${id}`, data),
     delete: (id) => api.delete(`/users/${id}`),
-    resetPassword: (id, data) => api.put(`/users/${id}/reset-password`, data)
+    resetPassword: (id, data) => api.put(`/users/${id}/reset-password`, data),
+    getProfile: () => api.get('/users/profile'),
+    updateProfile: (data) => api.put('/users/profile', data)
 };
 
 // Students API
@@ -127,5 +129,6 @@ export const schedulesAPI = {
     create: (data) => api.post('/schedules', data),
     initialize: (gradeId) => api.post(`/schedules/initialize/${gradeId}`),
     update: (id, data) => api.put(`/schedules/${id}`, data),
-    delete: (id) => api.delete(`/schedules/${id}`)
+    delete: (id) => api.delete(`/schedules/${id}`),
+    deleteAllByGrade: (gradeId) => api.delete(`/schedules/grade/${gradeId}/all`)
 };

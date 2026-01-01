@@ -57,18 +57,23 @@ export const AuthProvider = ({ children }) => {
         await api.put('/auth/password', { currentPassword, newPassword });
     };
 
+    const updateProfile = async (profileData) => {
+        const response = await api.put('/users/profile', profileData);
+        setUser(response.data.user);
+        return response.data.user;
+    };
+
     // Permission helpers
-    const isSuperAdmin = () => user?.role === 'super_admin';
-    const isAdmin = () => ['super_admin', 'admin'].includes(user?.role);
-    const isHeadTeacher = () => ['super_admin', 'admin', 'head_teacher'].includes(user?.role);
+    const isAdmin = () => ['admin'].includes(user?.role);
+    const isHeadTeacher = () => ['admin', 'head_teacher'].includes(user?.role);
     const isTeacher = () => user?.role === 'teacher';
 
-    const canDelete = () => user?.role === 'super_admin';
-    const canManageStudents = () => ['super_admin', 'admin', 'head_teacher'].includes(user?.role);
-    const canManageStaff = () => ['super_admin', 'admin'].includes(user?.role);
-    const canManageFees = () => ['super_admin', 'admin', 'head_teacher'].includes(user?.role);
-    const canEditAttendance = () => ['super_admin', 'admin', 'head_teacher'].includes(user?.role);
-    const canManageUsers = () => ['super_admin', 'admin'].includes(user?.role);
+    const canDelete = () => user?.role === 'admin';
+    const canManageStudents = () => ['admin', 'head_teacher'].includes(user?.role);
+    const canManageStaff = () => ['admin'].includes(user?.role);
+    const canManageFees = () => ['admin', 'head_teacher'].includes(user?.role);
+    const canEditAttendance = () => ['admin', 'head_teacher'].includes(user?.role);
+    const canManageUsers = () => ['admin'].includes(user?.role);
 
     const value = {
         user,
@@ -77,8 +82,8 @@ export const AuthProvider = ({ children }) => {
         login,
         logout,
         updatePassword,
+        updateProfile,
         isAuthenticated: !!user,
-        isSuperAdmin,
         isAdmin,
         isHeadTeacher,
         isTeacher,

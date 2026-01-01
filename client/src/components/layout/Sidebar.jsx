@@ -15,7 +15,7 @@ import {
 } from 'react-icons/fi';
 import './Sidebar.css';
 
-const Sidebar = ({ collapsed, onToggle }) => {
+const Sidebar = ({ collapsed, onToggle, onProfileClick }) => {
     const { user, logout, canManageStudents, canManageStaff, canManageUsers, canManageFees } = useAuth();
     const location = useLocation();
 
@@ -30,7 +30,7 @@ const Sidebar = ({ collapsed, onToggle }) => {
             path: '/students',
             icon: FiUsers,
             label: 'Students',
-            show: canManageStudents() || user?.role === 'teacher'
+            show: canManageStudents()
         },
         {
             path: '/staff',
@@ -74,7 +74,6 @@ const Sidebar = ({ collapsed, onToggle }) => {
 
     const getRoleBadge = () => {
         const roleLabels = {
-            super_admin: 'Super Admin',
             admin: 'Admin',
             head_teacher: 'Head Teacher',
             teacher: 'Teacher'
@@ -124,7 +123,7 @@ const Sidebar = ({ collapsed, onToggle }) => {
 
             <div className="sidebar-footer">
                 {!collapsed && (
-                    <div className="user-info">
+                    <div className="user-info" onClick={onProfileClick}>
                         <div className="user-avatar">
                             {user?.fullName?.charAt(0) || 'U'}
                         </div>

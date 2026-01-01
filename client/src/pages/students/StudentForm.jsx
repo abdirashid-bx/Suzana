@@ -28,6 +28,7 @@ const StudentForm = () => {
         gender: '',
         dateOfBirth: '', // Reverted to string for native input
         grade: '',
+        classroom: '',
 
         // Parent Details
         parent: {
@@ -73,7 +74,8 @@ const StudentForm = () => {
                     fullName: student.fullName,
                     gender: student.gender,
                     dateOfBirth: student.dateOfBirth ? new Date(student.dateOfBirth).toISOString().split('T')[0] : '',
-                    grade: student.grade?._id || student.grade, // Handle both populated and unpopulated
+                    grade: student.grade?._id || student.grade || '', // Handle both populated and unpopulated
+                    classroom: student.classroom?._id || student.classroom || '',
                     parent: {
                         fullName: student.parent?.fullName || '',
                         relationship: student.parent?.relationship || '',
@@ -187,6 +189,10 @@ const StudentForm = () => {
             newErrors.grade = 'Please select a grade';
         }
 
+        if (!formData.classroom) {
+            newErrors.classroom = 'Please select a class';
+        }
+
         // Parent validation
         if (!formData.parent.fullName.trim()) {
             newErrors['parent.fullName'] = 'Parent/guardian name is required';
@@ -244,6 +250,7 @@ const StudentForm = () => {
             // Ensure date is sent as string
             payload.append('dateOfBirth', formData.dateOfBirth);
             payload.append('grade', formData.grade);
+            payload.append('classroom', formData.classroom);
 
             // Parent data cleaning
             const parentData = {
@@ -460,6 +467,26 @@ const StudentForm = () => {
                                 </select>
                                 {getFieldError('grade') && (
                                     <span className="form-error">{getFieldError('grade')}</span>
+                                )}
+                            </div>
+                            <div className="form-group">
+                                <label className="form-label">Class *</label>
+                                <select
+                                    name="classroom"
+                                    className={`form-select ${getFieldError('classroom') ? 'error' : ''}`}
+                                    value={formData.classroom}
+                                    onChange={handleChange}
+                                    disabled={!formData.grade}
+                                >
+                                    <option value="">Select Class</option>
+                                    {grades.find(g => g._id === formData.grade)?.classrooms?.map((classroom) => (
+                                        <option key={classroom._id} value={classroom._id}>
+                                            {classroom.name}
+                                        </option>
+                                    ))}
+                                </select>
+                                {getFieldError('classroom') && (
+                                    <span className="form-error">{getFieldError('classroom')}</span>
                                 )}
                             </div>
                         </div>

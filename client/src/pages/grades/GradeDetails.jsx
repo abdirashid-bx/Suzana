@@ -12,6 +12,7 @@ const GradeDetails = () => {
     const [grade, setGrade] = useState(null);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
+    const [selectedClassroom, setSelectedClassroom] = useState(null);
 
     useEffect(() => {
         fetchGradeDetails();
@@ -33,11 +34,30 @@ const GradeDetails = () => {
 
     const getFilteredStudents = () => {
         if (!grade || !grade.students) return [];
-        return grade.students.filter(student =>
-            student.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            student.lastName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            student.admissionNumber?.toLowerCase().includes(searchTerm.toLowerCase())
-        );
+
+        let filtered = grade.students;
+
+        // Filter by classroom if one is selected
+        if (selectedClassroom) {
+            filtered = filtered.filter(student =>
+                student.classroom?._id === selectedClassroom
+            );
+        }
+
+        // Filter by search term
+        if (searchTerm) {
+            filtered = filtered.filter(student =>
+                student.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                student.admissionNo?.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+        }
+
+        return filtered;
+    };
+
+    const handleClassroomClick = (classroomId) => {
+        // Toggle: if clicking the same classroom, deselect it
+        setSelectedClassroom(selectedClassroom === classroomId ? null : classroomId);
     };
 
     const columns = [
@@ -47,9 +67,9 @@ const GradeDetails = () => {
             render: (row) => (
                 <div className="student-avatar-small">
                     {row.photo ? (
-                        <img src={row.photo} alt={`${row.firstName} ${row.lastName}`} />
+                        <img src={row.photo} alt={row.fullName} />
                     ) : (
-                        <div className="avatar-placeholder">{row.firstName?.charAt(0)}</div>
+                        <div className="avatar-placeholder">{row.fullName?.charAt(0)}</div>
                     )}
                 </div>
             )
@@ -59,8 +79,8 @@ const GradeDetails = () => {
             label: 'Name',
             render: (row) => (
                 <div>
-                    <div className="font-medium">{row.firstName} {row.lastName}</div>
-                    <div className="text-secondary text-sm">{row.admissionNumber}</div>
+                    <div className="font-medium">{row.fullName}</div>
+                    <div className="text-secondary text-sm">{row.admissionNo}</div>
                 </div>
             )
         },
@@ -135,7 +155,12 @@ const GradeDetails = () => {
                         <h3>Classrooms (Streams)</h3>
                         <div className="classrooms-list mt-1">
                             {grade.classrooms && grade.classrooms.map(c => (
-                                <span key={c._id} className="classroom-badge">
+                                <span
+                                    key={c._id}
+                                    className={`classroom-badge ${selectedClassroom === c._id ? 'selected' : ''}`}
+                                    onClick={() => handleClassroomClick(c._id)}
+                                    style={{ cursor: 'pointer' }}
+                                >
                                     {c.name} ({c.currentCount})
                                 </span>
                             ))}
@@ -146,9 +171,23 @@ const GradeDetails = () => {
 
             <div className="card Regester-card">
                 <div className="table-header p-4 border-b flex justify-between items-center space-y-3">
-                    <h2>Registered Students</h2>
+                    <div>
+                        <h2>Registered Students</h2>
+                        {selectedClassroom && (
+                            <p className="text-sm text-secondary mt-1">
+                                Filtered by: {grade.classrooms?.find(c => c._id === selectedClassroom)?.name}
+                                <button
+                                    onClick={() => setSelectedClassroom(null)}
+                                    className="ml-2 text-primary underline"
+                                    style={{ fontSize: '0.875rem' }}
+                                >
+                                    Clear filter
+                                </button>
+                            </p>
+                        )}
+                    </div>
                     <div className="search-box">
-                        <FiSearch className='search-icn'/>
+                        <FiSearch className='search-icn' />
                         <input
                             type="text"
                             placeholder="Search students..."

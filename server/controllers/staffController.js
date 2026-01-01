@@ -35,7 +35,7 @@ exports.getStaff = async (req, res) => {
         res.json({ success: true, count: staff.length, staff });
     } catch (error) {
         console.error('Get staff error:', error);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: error.message || 'An unexpected error occurred' });
     }
 };
 
@@ -56,7 +56,7 @@ exports.getStaffMember = async (req, res) => {
         res.json({ success: true, staff });
     } catch (error) {
         console.error('Get staff member error:', error);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: error.message || 'An unexpected error occurred' });
     }
 };
 
@@ -153,7 +153,7 @@ exports.createStaff = async (req, res) => {
         if (error.code === 11000) {
             return res.status(400).json({ message: 'Duplicate entry found' });
         }
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: error.message || 'An unexpected error occurred' });
     }
 };
 
@@ -215,7 +215,7 @@ exports.updateStaff = async (req, res) => {
         res.json({ success: true, staff: updatedStaff });
     } catch (error) {
         console.error('Update staff error:', error);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: error.message || 'An unexpected error occurred' });
     }
 };
 
@@ -239,6 +239,6 @@ exports.deleteStaff = async (req, res) => {
         res.json({ success: true, message: 'Staff member deleted successfully' });
     } catch (error) {
         console.error('Delete staff error:', error);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: error.message || 'An unexpected error occurred' });
     }
 };

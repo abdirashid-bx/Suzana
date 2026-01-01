@@ -43,11 +43,11 @@ const authorize = (...roles) => {
     };
 };
 
-// Check if user can delete (only super_admin)
+// Check if user can delete (only admin)
 const canDelete = (req, res, next) => {
-    if (req.user.role !== 'super_admin') {
+    if (req.user.role !== 'admin') {
         return res.status(403).json({
-            message: 'Only Super Admin can delete records'
+            message: 'Only Admin can delete records'
         });
     }
     next();
@@ -55,7 +55,7 @@ const canDelete = (req, res, next) => {
 
 // Check if user can manage students
 const canManageStudents = (req, res, next) => {
-    const allowedRoles = ['super_admin', 'admin', 'head_teacher'];
+    const allowedRoles = ['admin', 'head_teacher'];
     if (!allowedRoles.includes(req.user.role)) {
         return res.status(403).json({
             message: 'Not authorized to manage students'
@@ -66,7 +66,7 @@ const canManageStudents = (req, res, next) => {
 
 // Check if user can manage staff
 const canManageStaff = (req, res, next) => {
-    const allowedRoles = ['super_admin', 'admin'];
+    const allowedRoles = ['admin'];
     if (!allowedRoles.includes(req.user.role)) {
         return res.status(403).json({
             message: 'Not authorized to manage staff'
@@ -77,7 +77,7 @@ const canManageStaff = (req, res, next) => {
 
 // Check if user can manage fees
 const canManageFees = (req, res, next) => {
-    const allowedRoles = ['super_admin', 'admin', 'head_teacher'];
+    const allowedRoles = ['admin', 'head_teacher'];
     if (!allowedRoles.includes(req.user.role)) {
         return res.status(403).json({
             message: 'Not authorized to manage fees'
@@ -88,7 +88,7 @@ const canManageFees = (req, res, next) => {
 
 // Check if user can edit attendance
 const canEditAttendance = (req, res, next) => {
-    const allowedRoles = ['super_admin', 'admin', 'head_teacher'];
+    const allowedRoles = ['admin', 'head_teacher'];
     if (!allowedRoles.includes(req.user.role)) {
         return res.status(403).json({
             message: 'Only admins and head teachers can edit attendance records'

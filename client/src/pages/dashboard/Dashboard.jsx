@@ -14,7 +14,7 @@ import {
     FiCheckCircle,
     FiClock
 } from 'react-icons/fi';
-import { studentsAPI, staffAPI, gradesAPI, feesAPI, attendanceAPI } from '../../services/api';
+import { studentsAPI, staffAPI, gradesAPI, feesAPI, attendanceAPI, schedulesAPI } from '../../services/api';
 import './Dashboard.css';
 
 const Dashboard = () => {
@@ -30,6 +30,7 @@ const Dashboard = () => {
     const [loading, setLoading] = useState(true);
     const [recentStudents, setRecentStudents] = useState([]);
     const [outstandingFees, setOutstandingFees] = useState([]);
+    const [todaySchedule, setTodaySchedule] = useState(null);
 
     useEffect(() => {
         fetchDashboardData();
@@ -77,6 +78,16 @@ const Dashboard = () => {
 
             setRecentStudents(studentsRes.data.students?.slice(0, 5) || []);
             setOutstandingFees(feeData.studentsWithOutstanding?.slice(0, 5) || []);
+
+            // Fetch today's schedule for teachers
+            if (user?.role === 'teacher' && user?.assignedGrade) {
+                try {
+                    const scheduleRes = await schedulesAPI.getTodaySchedule(user.assignedGrade);
+                    setTodaySchedule(scheduleRes.data.schedule);
+                } catch (e) {
+                    console.log('No schedule data');
+                }
+            }
 
         } catch (error) {
             console.error('Failed to fetch dashboard data:', error);
@@ -287,29 +298,25 @@ const Dashboard = () => {
                             </Link>
                         </div>
                         <div className="card-body">
-                            <div className="schedule-preview">
-                                <div className="schedule-item">
-                                    <FiClock className="schedule-icon" />
-                                    <div className="schedule-info">
-                                        <span className="schedule-time">08:00 - 09:00</span>
-                                        <span className="schedule-activity">Morning Activity</span>
-                                    </div>
+                            {todaySchedule && todaySchedule.periods && todaySchedule.periods.length > 0 ? (
+                                <div className="schedule-preview">
+                                    {todaySchedule.periods.slice(0, 4).map((period, index) => (
+                                        <div key={index} className={`schedule-item schedule-type-${period.type}`}>
+                                            <FiClock className="schedule-icon" />
+                                            <div className="schedule-info">
+                                                <span className="schedule-time">{period.startTime} - {period.endTime}</span>
+                                                <span className="schedule-activity">{period.activity}</span>
+                                            </div>
+                                            <span className="schedule-badge">{period.type}</span>
+                                        </div>
+                                    ))}
                                 </div>
-                                <div className="schedule-item">
-                                    <FiClock className="schedule-icon" />
-                                    <div className="schedule-info">
-                                        <span className="schedule-time">09:00 - 09:30</span>
-                                        <span className="schedule-activity">Class 1</span>
-                                    </div>
+                            ) : (
+                                <div className="empty-state">
+                                    <FiCalendar className="empty-icon" />
+                                    <p>No schedule for today</p>
                                 </div>
-                                <div className="schedule-item">
-                                    <FiClock className="schedule-icon" />
-                                    <div className="schedule-info">
-                                        <span className="schedule-time">09:40 - 10:10</span>
-                                        <span className="schedule-activity">Class 2</span>
-                                    </div>
-                                </div>
-                            </div>
+                            )}
                         </div>
                     </div>
                 )}

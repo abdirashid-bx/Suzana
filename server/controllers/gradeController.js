@@ -7,7 +7,15 @@ const Student = require('../models/Student');
 // @access  Private
 exports.getGrades = async (req, res) => {
     try {
-        const grades = await Grade.find({ isActive: true })
+        // Build query filter
+        let filter = { isActive: true };
+
+        // If user is a teacher, only show their assigned grade
+        if (req.user.role === 'teacher' && req.user.assignedGrade) {
+            filter._id = req.user.assignedGrade;
+        }
+
+        const grades = await Grade.find(filter)
             .populate('teacher', 'fullName email')
             .sort({ order: 1 });
 
@@ -27,7 +35,7 @@ exports.getGrades = async (req, res) => {
         res.json({ success: true, grades: gradesWithStats });
     } catch (error) {
         console.error('Get grades error:', error);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: error.message || 'An unexpected error occurred' });
     }
 };
 
@@ -66,7 +74,7 @@ exports.getGrade = async (req, res) => {
         });
     } catch (error) {
         console.error('Get grade error:', error);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: error.message || 'An unexpected error occurred' });
     }
 };
 
@@ -109,7 +117,7 @@ exports.createGrade = async (req, res) => {
         res.status(201).json({ success: true, grade: populatedGrade });
     } catch (error) {
         console.error('Create grade error:', error);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: error.message || 'An unexpected error occurred' });
     }
 };
 
@@ -139,7 +147,7 @@ exports.updateGrade = async (req, res) => {
         res.json({ success: true, grade: updatedGrade });
     } catch (error) {
         console.error('Update grade error:', error);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: error.message || 'An unexpected error occurred' });
     }
 };
 
@@ -169,7 +177,7 @@ exports.deleteGrade = async (req, res) => {
         res.json({ success: true, message: 'Grade deleted successfully' });
     } catch (error) {
         console.error('Delete grade error:', error);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: error.message || 'An unexpected error occurred' });
     }
 };
 
@@ -233,6 +241,6 @@ exports.promoteStudents = async (req, res) => {
         });
     } catch (error) {
         console.error('Promote students error:', error);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: error.message || 'An unexpected error occurred' });
     }
 };

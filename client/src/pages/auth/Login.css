@@ -1,118 +1,87 @@
 .login-page {
-    max-height: 100vh;
+    min-height: 100vh;
+    height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
     background: linear-gradient(135deg, var(--color-maroon) 0%, var(--color-maroon-dark) 50%, var(--color-navy-dark) 100%);
-    padding: var(--spacing-lg);
+    padding: var(--spacing-md);
+    overflow: hidden;
+    /* Force no scroll on main page */
 }
 
-/* .login-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+.card-logo {
+    display: block;
+    margin: 0 auto 10px;
+    width: 80px;
+    /* Smaller logo */
+    height: auto;
+}
+
+.login-container {
     width: 100%;
-    max-width: 420px;
-}
-
-.login-branding {
-    text-align: center;
-    margin-bottom: var(--spacing-xl);
-    color: var(--color-white);
-}
-
-.login-logo-container {
-    margin-bottom: var(--spacing-md);
-}
-
-.login-logo {
-    width: 100px;
-    height: 100px;
-    border-radius: var(--radius-xl);
-    box-shadow: var(--shadow-xl);
-    background: var(--color-white);
-    padding: 8px;
-}
-
-.login-title {
-    font-size: 1.75rem;
-    font-weight: 700;
-    margin: 0 0 var(--spacing-xs);
-    color: var(--color-white);
-}
-
-.login-subtitle {
-    font-size: 1rem;
-    opacity: 0.9;
-    margin: 0 0 var(--spacing-md);
-}
-
-.login-motto {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--spacing-sm);
-    font-size: 0.875rem;
-    color: var(--color-gold);
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-}
-
-.login-motto .dot {
-    opacity: 0.6;
-} */
- .card-logo {
-    display: block;           /* Waa muhiim si margin loogu shaqeeyo */
-    margin: auto; /* 0=top, auto=left/right (center), 20px=bottom gap */
-    width: 200px;          /* Hagaaji size-ka aad rabto (tusaale 80px ama 100px) */
-    height: auto;             /* Ilaali saamiga sawirka */
-}
-.login-container { /* Isticmaal magaca class-kaaga saxda ah */
-    padding: 40px;
-    border-radius: 20px;
-    width: 100%;           
-    max-width: 550px;      
-    margin: 0 auto;        
+    max-width: 400px;
+    /* Tighter width */
+    margin: 0 auto;
 }
 
 .login-card {
     background: var(--color-white);
     border-radius: var(--radius-xl);
-    box-shadow: var(--shadow-xl);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
     width: 100%;
     overflow: hidden;
 }
 
 .login-card-header {
-    padding: var(--spacing-xl) var(--spacing-xl) var(--spacing-md);
+    padding: var(--spacing-lg) var(--spacing-lg) 0;
+    /* Reduced padding */
     text-align: center;
 }
 
 .login-card-header h2 {
     font-size: 1.5rem;
-    font-weight: 600;
+    /* Smaller heading */
+    font-weight: 700;
     color: var(--color-gray-900);
-    margin: 0 0 var(--spacing-xs);
+    margin: 0 0 4px;
 }
 
 .login-card-header p {
-    font-size: 0.9375rem;
-    color: var(--color-gray-500);
+    font-size: 0.875rem;
+    color: var(--color-gray-600);
     margin: 0;
 }
 
 .login-form {
-    padding: var(--spacing-md) var(--spacing-xl) var(--spacing-xl);
+    padding: var(--spacing-lg);
+}
+
+.form-group {
+    margin-bottom: 16px;
+    /* Tighter gap between inputs */
+}
+
+.form-label {
+    margin-bottom: 4px;
+    font-size: 0.875rem;
+}
+
+.form-input {
+    padding: 10px 12px;
+    /* Smaller inputs */
 }
 
 .login-btn {
     width: 100%;
-    margin-top: var(--spacing-sm);
+    margin-top: 10px;
+    padding: 12px;
+    font-size: 1rem;
+    font-weight: 600;
 }
 
 .login-footer {
-    padding: var(--spacing-md);
+    padding: 12px;
     text-align: center;
     background: var(--color-gray-50);
     border-top: 1px solid var(--color-gray-200);
@@ -127,19 +96,18 @@
 /* Responsive */
 @media (max-width: 480px) {
     .login-page {
-        padding: var(--spacing-md);
+        padding: var(--spacing-sm);
     }
 
-    .login-logo {
-        width: 80px;
-        height: 80px;
+    .card-logo {
+        width: 60px;
     }
 
-    .login-title {
-        font-size: 1.5rem;
+    .login-container {
+        max-width: 100%;
     }
 
-    .login-form {
-        padding: var(--spacing-md);
+    .login-card-header h2 {
+        font-size: 1.25rem;
     }
 }

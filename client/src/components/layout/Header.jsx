@@ -3,7 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import { FiBell, FiSearch } from 'react-icons/fi';
 import './Header.css';
 
-const Header = () => {
+const Header = ({ onProfileClick }) => {
     const { user } = useAuth();
     const location = useLocation();
 
@@ -63,7 +63,7 @@ const Header = () => {
                     <span className="notification-dot"></span>
                 </button>
 
-                <div className="header-user">
+                <div className="header-user" onClick={onProfileClick}>
                     <div className="header-avatar">
                         {user?.fullName?.charAt(0) || 'U'}
                     </div>

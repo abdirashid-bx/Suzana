@@ -175,7 +175,7 @@ const StudentsList = () => {
                                             <span className="student-name">{student.fullName}</span>
                                         </td>
                                         <td>{student.gender}</td>
-                                        <td>{student.grade?.name}</td>
+                                        <td>{student.classroom?.name}</td>
                                         <td>
                                             <span className={`status-pill status-${student.status}`}>
                                                 {student.status}
