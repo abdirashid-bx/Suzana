@@ -63,7 +63,7 @@ npm run dev
 - Backend API: http://localhost:5000
 
 ### Default Login Credentials
-- **Username:** superAdmin
+- **Username:** admin
 - **Password:** 12345678
 
 ## 📦 Features
@@ -71,8 +71,7 @@ npm run dev
 ### User Roles
 | Role | Permissions |
 |------|-------------|
-| Super Admin | Full access, can delete records |
-| Admin | Full access except delete |
+| Admin | Full access, can delete records |
 | Head Teacher | Manage students, grades, fees, attendance |
 | Teacher | View classes, mark attendance |
 
