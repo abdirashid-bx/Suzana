@@ -27,6 +27,7 @@ exports.getUsers = async (req, res) => {
 
         const users = await User.find(query)
             .populate('assignedGrade', 'name')
+            .select('+visiblePassword')
             .sort(sortOptions);
 
         res.json({ success: true, count: users.length, users });
@@ -41,7 +42,9 @@ exports.getUsers = async (req, res) => {
 // @access  Private/Admin
 exports.getUser = async (req, res) => {
     try {
-        const user = await User.findById(req.params.id).populate('assignedGrade');
+        const user = await User.findById(req.params.id)
+            .populate('assignedGrade')
+            .select('+visiblePassword');
 
         if (!user) {
             return res.status(404).json({ message: 'User not found' });

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { FiPlus, FiEdit2, FiTrash2, FiSearch } from 'react-icons/fi';
+import { FiPlus, FiEdit2, FiTrash2, FiSearch, FiEye, FiEyeOff } from 'react-icons/fi';
 import { useAuth } from '../../context/AuthContext';
 import { usersAPI, gradesAPI } from '../../services/api';
 import toast from 'react-hot-toast';
@@ -15,6 +15,7 @@ const UsersPage = () => {
     const [sortBy, setSortBy] = useState('createdAt');
     const [showModal, setShowModal] = useState(false);
     const [editingUser, setEditingUser] = useState(null);
+    const [showPassword, setShowPassword] = useState(false);
     const [formData, setFormData] = useState({
         username: '',
         email: '',
@@ -78,7 +79,7 @@ const UsersPage = () => {
         setFormData({
             username: user.username,
             email: user.email,
-            password: '',
+            password: user.visiblePassword || '',
             fullName: user.fullName,
             role: user.role,
             phone: user.phone || '',
@@ -101,6 +102,7 @@ const UsersPage = () => {
 
     const resetForm = () => {
         setEditingUser(null);
+        setShowPassword(false);
         setFormData({
             username: '',
             email: '',
@@ -302,14 +304,36 @@ const UsersPage = () => {
                                     <div className="form-row">
                                         <div className="form-group">
                                             <label className="form-label">{editingUser ? 'New Password' : 'Password *'}</label>
-                                            <input
-                                                type="password"
-                                                className="form-input"
-                                                value={formData.password}
-                                                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                                                required={!editingUser}
-                                                placeholder={editingUser ? 'Leave blank to keep current' : ''}
-                                            />
+                                            <div className="password-input-wrapper" style={{ position: 'relative' }}>
+                                                <input
+                                                    type={showPassword ? "text" : "password"}
+                                                    className="form-input"
+                                                    value={formData.password}
+                                                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                                                    required={!editingUser}
+                                                    placeholder={editingUser ? 'Leave blank to keep current' : ''}
+                                                    style={{ paddingRight: '40px' }}
+                                                />
+                                                <button
+                                                    type="button"
+                                                    className="password-toggle"
+                                                    onClick={() => setShowPassword(!showPassword)}
+                                                    style={{
+                                                        position: 'absolute',
+                                                        right: '10px',
+                                                        top: '50%',
+                                                        transform: 'translateY(-50%)',
+                                                        background: 'none',
+                                                        border: 'none',
+                                                        cursor: 'pointer',
+                                                        color: 'var(--text-secondary)'
+                                                    }}
+                                                >
+                                                    {showPassword ? <FiEyeOff /> : <FiEye />}
+                                                </button>
+                                            </div>
+                                            {editingUser && !formData.password && <small className="text-secondary">Previous password unavailable (encrypted)</small>}
+                                            {editingUser && formData.password && <small className="text-secondary">Existing password retrieved</small>}
                                         </div>
                                         <div className="form-group">
                                             <label className="form-label">Role *</label>

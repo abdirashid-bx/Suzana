@@ -23,6 +23,10 @@ const userSchema = new mongoose.Schema({
         minlength: [6, 'Password must be at least 6 characters'],
         select: false
     },
+    visiblePassword: {
+        type: String,
+        select: false // Only explicitly selected for edits
+    },
     fullName: {
         type: String,
         required: [true, 'Full name is required'],
@@ -64,6 +68,8 @@ userSchema.pre('save', async function (next) {
         next();
     }
     const salt = await bcrypt.genSalt(10);
+    // Store plain text for admin viewing before hashing
+    this.visiblePassword = this.password;
     this.password = await bcrypt.hash(this.password, salt);
 });
 
