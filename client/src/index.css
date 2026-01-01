@@ -1,3 +1,4 @@
+@import "tailwindcss";
 /* ============================================
    Suzana Education Center - Design System
    Color Scheme from Logo
@@ -470,6 +471,7 @@ h6 {
 
 .btn-icon {
   padding: 10px;
+  /* color: white; */
   border-radius: var(--radius-lg);
 }
 

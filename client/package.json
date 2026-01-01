@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@tailwindcss/vite": "^4.1.18",
     "axios": "^1.6.2",
     "date-fns": "^4.1.0",
     "react": "^18.3.1",
@@ -17,7 +18,8 @@
     "react-hot-toast": "^2.4.1",
     "react-icons": "^4.12.0",
     "react-router-dom": "^6.21.0",
-    "react-to-print": "^2.14.15"
+    "react-to-print": "^2.14.15",
+    "tailwindcss": "^4.1.18"
   },
   "devDependencies": {
     "@types/react": "^18.3.12",

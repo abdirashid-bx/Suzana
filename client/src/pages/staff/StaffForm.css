@@ -206,7 +206,6 @@
     align-items: center;
     gap: 4px;
 }
-
 /* Responsive */
 @media (max-width: 768px) {
     .photo-row {

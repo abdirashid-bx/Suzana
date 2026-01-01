@@ -125,17 +125,17 @@ const GradesList = () => {
                             {isAdmin() && (
                                 <div className="grade-actions" onClick={(e) => e.stopPropagation()}>
                                     <button
-                                        className="btn btn-icon btn-ghost"
+                                        className="btn btn-icon "
                                         onClick={() => handleOpenModal(grade)}
                                     >
-                                        <FiEdit2 />
+                                        <FiEdit2 className='hover:text-white'/>
                                     </button>
                                     {canDelete() && (
                                         <button
-                                            className="btn btn-icon btn-ghost text-danger"
+                                            className="btn btn-icon  text-danger"
                                             onClick={() => confirmDelete(grade)}
                                         >
-                                            <FiTrash2 />
+                                            <FiTrash2 className='hover:text-white'/>
                                         </button>
                                     )}
                                 </div>

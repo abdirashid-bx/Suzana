@@ -143,15 +143,16 @@ const StaffList = () => {
                 )}
             </div>
 
-            <div className="card">
-                <div className="table-toolbar">
-                    <form onSubmit={handleSearch} className="search-box">
-                        <FiSearch />
+            <div className="table-card">
+                <div className="table-header-controls">
+                    <form onSubmit={handleSearch} className="search-form">
+                        <FiSearch className="search-icon" />
                         <input
                             type="text"
-                            placeholder="Search staff by name or ID..."
+                            placeholder="Search by name or student ID..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
+                            className="search-input"
                         />
                     </form>
                     <div className="filters">

@@ -98,7 +98,7 @@ const StudentDetails = () => {
                     <button onClick={() => navigate('/students')} className="btn btn-ghost btn-back">
                         <FiArrowLeft /> Back
                     </button>
-                    <h1>Student Details</h1>
+                    <h1 className=''>Student Details</h1>
                 </div>
                 <div className="header-actions">
                     {canManageStudents() && (
@@ -134,18 +134,18 @@ const StudentDetails = () => {
 
                     <div className="profile-stats">
                         <div className="stat-item">
-                            <span className="stat-label">Current Class</span>
+                            <span className="stat-label">Current Class :</span>
                             <span className="stat-value">{student.grade?.name || 'N/A'}</span>
                         </div>
                         <div className="stat-item">
-                            <span className="stat-label">Gender</span>
+                            <span className="stat-label">Gender : </span>
                             <span className="stat-value capitalize">{student.gender}</span>
                         </div>
                         <div className="stat-item">
-                            <span className="stat-label">Age</span>
+                            <span className="stat-label">Age :</span>
                             <span className="stat-value">
                                 {student.age} years
-                                <span className="text-secondary text-sm block font-normal">Born {format(new Date(student.dateOfBirth), 'dd MMM yyyy')}</span>
+                                <span className="text-secondary text-sm font-normal space-x-2 "> </span>
                             </span>
                         </div>
                     </div>
@@ -178,8 +178,9 @@ const StudentDetails = () => {
                             </div>
                             <div className="info-item">
                                 <label>Location/Residence</label>
-                                <p>
-                                    <FiMapPin className="inline-icon mr-1" /> {student.parent?.location}
+                                <p className='flex items-center gap-2'>
+                                    <FiMapPin className="inline-icon mr-1" /> 
+                                    {student.parent?.location}
                                 </p>
                             </div>
                             {student.parent?.email && (

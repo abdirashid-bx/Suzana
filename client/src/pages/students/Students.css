@@ -3,7 +3,12 @@
     flex-direction: column;
     gap: var(--spacing-lg);
     max-width: 100%;
+    padding: 10px;
     overflow-x: hidden;
+}
+.students-page h1{
+    font-size: 1rem;
+    color: var(--color-gray-700);
 }
 
 .page-header {
@@ -364,7 +369,7 @@
 
 .stat-item {
     display: flex;
-    justify-content: space-between;
+    /* justify-content: space-between; */
     align-items: center;
     padding: var(--spacing-sm) 0;
     border-bottom: 1px solid var(--color-gray-50);
@@ -375,14 +380,15 @@
 }
 
 .stat-label {
-    color: var(--color-gray-500);
+    color: var(--color-gray-800);
     font-size: 0.9rem;
     font-weight: 500;
 }
 
 .stat-value {
     font-weight: 600;
-    color: var(--color-gray-800);
+    font-size:1rem;
+    color: var(--color-gray-500);
 }
 
 .capitalize {
@@ -393,7 +399,7 @@
 .details-column {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-xl);
+    gap: var(--spacing-md);
 }
 
 .details-section {
@@ -415,7 +421,7 @@
 
 .section-icon {
     font-size: 1.25rem;
-    color: var(--color-maroon);
+    color: var(--color-white);
     background: var(--color-maroon-light);
     padding: 10px;
     border-radius: var(--radius-md);

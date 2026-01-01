@@ -112,7 +112,8 @@ const GradeDetails = () => {
                     </div>
                     <div className="stat-info">
                         <h3>Total Students</h3>
-                        <p className="stat-value">{grade.studentCount || 0}</p>
+                        <p className="stat-value">{grade.studentCount || 0}  <span>Students</span>
+                        </p>
                     </div>
                 </div>
                 <div className="card stat-card">
@@ -143,16 +144,17 @@ const GradeDetails = () => {
                 </div>
             </div>
 
-            <div className="card">
-                <div className="table-header p-4 border-b flex justify-between items-center">
+            <div className="card Regester-card">
+                <div className="table-header p-4 border-b flex justify-between items-center space-y-3">
                     <h2>Registered Students</h2>
                     <div className="search-box">
-                        <FiSearch />
+                        <FiSearch className='search-icn'/>
                         <input
                             type="text"
                             placeholder="Search students..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
+                            className='search-input search-input-grade'
                         />
                     </div>
                 </div>

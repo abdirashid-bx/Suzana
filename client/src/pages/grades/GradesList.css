@@ -269,3 +269,41 @@
 .btn-confirm-delete:hover {
     background: #B91C1C;
 }
+
+.grade-stats-grid{
+   display: grid;
+   grid-template-columns: 1fr 1fr 1fr;
+   gap: 20px;
+}
+.stat-icon{
+    padding: 5px;
+    
+}
+.stat-card:hover{
+    .stat-icon{
+        background-color: var(--color-maroon);
+        color: var(--color-white);
+    }
+}
+.search-input-grade{
+    margin: 10px;
+    border-radius: 20px;
+    width: 400px;
+}
+.search-input:focus{
+    width: 450px;
+    outline: none;
+    background: white;
+    border-color: var(--color-maroon);
+    box-shadow: 0 0 0 3px rgba(114, 47, 55, 0.1);
+}
+.search-icn{
+     position: absolute;
+    left: 20px;
+    color: var(--color-gray-400);
+    font-size: 1.1rem;
+
+}
+.Regester-card{
+    padding: 20px;
+}
