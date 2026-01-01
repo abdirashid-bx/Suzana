@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { feesAPI } from '../../services/api';
 import toast from 'react-hot-toast';
 import './FinancePage.css';
+import ConfirmModal from '../../components/common/ConfirmModal';
 
 const FinancePage = () => {
     const { canManageFees } = useAuth();
@@ -12,6 +13,8 @@ const FinancePage = () => {
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState('outstanding');
     const [payingId, setPayingId] = useState(null);
+    const [confirmOpen, setConfirmOpen] = useState(false);
+    const [confirmPayload, setConfirmPayload] = useState({ feeId: null, amount: 0, studentName: '' });
 
     useEffect(() => {
         fetchData();
@@ -33,16 +36,19 @@ const FinancePage = () => {
         }
     };
 
-    const handlePayFee = async (feeId, amount, studentName) => {
-        if (!window.confirm(`Confirm payment of KES ${amount.toLocaleString()} for ${studentName}?`)) {
-            return;
-        }
+    const openPayConfirm = (feeId, amount, studentName) => {
+        setConfirmPayload({ feeId, amount, studentName });
+        setConfirmOpen(true);
+    };
 
+    const handleConfirmPay = async () => {
+        const { feeId, amount, studentName } = confirmPayload;
         try {
             setPayingId(feeId);
             await feesAPI.pay(feeId, { paymentMethod: 'cash' });
             toast.success('Payment recorded successfully!');
             fetchData();
+            setConfirmOpen(false);
         } catch (error) {
             toast.error(error.response?.data?.message || 'Failed to process payment');
         } finally {
@@ -178,7 +184,7 @@ const FinancePage = () => {
                                                 {fee.status === 'outstanding' ? (
                                                     <button
                                                         className="btn btn-sm btn-primary"
-                                                        onClick={() => handlePayFee(fee._id, fee.amount, fee.student?.fullName)}
+                                                        onClick={() => openPayConfirm(fee._id, fee.amount, fee.student?.fullName)}
                                                         disabled={payingId === fee._id}
                                                     >
                                                         {payingId === fee._id ? (
@@ -206,6 +212,18 @@ const FinancePage = () => {
                     )}
                 </div>
             </div>
+            <ConfirmModal
+                open={confirmOpen}
+                title="Confirm Payment"
+                message={
+                    `Confirm payment of KES ${confirmPayload.amount.toLocaleString()} for ${confirmPayload.studentName}?`
+                }
+                onConfirm={handleConfirmPay}
+                onCancel={() => setConfirmOpen(false)}
+                confirmText="Confirm"
+                cancelText="Cancel"
+                loading={payingId === confirmPayload.feeId}
+            />
         </div>
     );
 };

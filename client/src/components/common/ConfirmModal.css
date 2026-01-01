@@ -1,0 +1,136 @@
+/* Overlay - Meesha madow ee gadaal ka xiraysa */
+.cm-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.45); /* Madow khafiif ah */
+  backdrop-filter: blur(2px); /* Wax yar ayuu blur ka dhigayaa gadaal */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+}
+
+/* Modal-ka weyn */
+.cm-modal {
+  background: #faf6f6;
+  width: 100%;
+  max-width: 420px;
+  border-radius: 32px; /* Geesaha aad u wareegsan sidii sawirka */
+  padding: 40px 30px;
+  text-align: center;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  animation: modalAppear 0.3s ease-out;
+}
+
+/* Icon-ka sare */
+.cm-icon-wrapper {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+}
+
+/* Midabka icon-ka haddii uu yahay success (Green) */
+.cm-success {
+  background-color: #f0fdf4;
+  color: #22c55e;
+}
+
+.cm-icon {
+  font-size: 32px;
+  display: flex;
+}
+
+/* Qoraalka (Content) */
+.cm-title {
+  color: #111827;
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  font-family: 'Inter', sans-serif;
+}
+
+.cm-message {
+  color: #4b5563;
+  font-size: 16px;
+  line-height: 1.6;
+  margin-bottom: 8px;
+}
+.cm-message strong {
+  color: #111827; /* Madow xooggan */
+  font-weight: 800; /* Aad u buuran */
+  display: inline-block; /* Waxay ka caawisaa inuu xoogaa ka dhex baxo qoraalka */
+  margin: 0 2px; /* In yar oo firaaqo ah si uusan ugu dhiman qoraalka kale */
+}
+
+.cm-subtext {
+  color: #9ca3af;
+  font-size: 14px;
+  margin-bottom: 32px;
+}
+
+/* Footer-ka (Buttons) */
+.cm-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.cm-btn {
+  flex: 1;
+  padding: 16px 24px;
+  border-radius: 18px; /* Badhamada oo wareegsan */
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+/* Button-ka Cancel */
+.cm-btn-cancel {
+  background: transparent;
+  color: #6b7280;
+}
+
+.cm-btn-cancel:hover {
+  background: rgba(114, 47, 55, 0.129);
+  color: var(--color-maroon);
+}
+
+/* Button-ka Confirm */
+.cm-btn-confirm {
+  color: #ffffff;
+box-shadow: 0 10px 15px -3px rgba(114, 47, 55, 0.4); /* Shadow using #722F37 */
+}
+
+.cm-btn-success {
+  background-color: var(--color-maroon); 
+}
+
+.cm-btn-confirm:hover:not(:disabled) {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+}
+
+.cm-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Animation-ka soo bixitaanka */
+@keyframes modalAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
