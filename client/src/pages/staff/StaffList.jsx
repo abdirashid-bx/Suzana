@@ -13,6 +13,7 @@ const StaffList = () => {
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [filterRole, setFilterRole] = useState('');
+    const [sortOption, setSortOption] = useState('createdAt-desc');
 
     // Delete Modal State
     const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -20,14 +21,17 @@ const StaffList = () => {
 
     useEffect(() => {
         fetchStaff();
-    }, [filterRole]); // Refetch when filter/sort changes
+    }, [filterRole, sortOption]);
 
     const fetchStaff = async () => {
         try {
             setLoading(true);
+            const [sortBy, sortOrder] = sortOption.split('-');
             const response = await staffAPI.getAll({
                 role: filterRole,
-                search: searchTerm
+                search: searchTerm,
+                sortBy: sortBy,
+                sortOrder: sortOrder
             });
             setStaff(response.data.staff || []);
         } catch (error) {
@@ -129,12 +133,23 @@ const StaffList = () => {
         }
     ];
 
+    // Client-side filtering for instant feedback
+    const filteredStaff = staff.filter(person => {
+        const searchLower = searchTerm.toLowerCase();
+        return (
+            person.fullName?.toLowerCase().includes(searchLower) ||
+            person.nationalId?.toLowerCase().includes(searchLower) ||
+            person.email?.toLowerCase().includes(searchLower) ||
+            person.userAccount?.username?.toLowerCase().includes(searchLower)
+        );
+    });
+
     return (
         <div className="students-page">
             <div className="page-header">
                 <div className="page-header-left">
                     <h1>Staff Management</h1>
-                    <span className="count-badge">{staff.length} staff members</span>
+                    <span className="count-badge">{filteredStaff.length} staff members</span>
                 </div>
                 {canManageStaff() && (
                     <Link to="/staff/new" className="btn btn-primary">
@@ -149,7 +164,7 @@ const StaffList = () => {
                         <FiSearch className="search-icon" />
                         <input
                             type="text"
-                            placeholder="Search by name or student ID..."
+                            placeholder="Search by name, ID, or email..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             className="search-input"
@@ -167,12 +182,22 @@ const StaffList = () => {
                             <option value="admin">Admins</option>
                             <option value="support_staff">Support Staff</option>
                         </select>
+                        <select
+                            value={sortOption}
+                            onChange={(e) => setSortOption(e.target.value)}
+                            className="filter-select"
+                        >
+                            <option value="createdAt-desc">Newest First</option>
+                            <option value="createdAt-asc">Oldest First</option>
+                            <option value="fullName-asc">Name (A-Z)</option>
+                            <option value="fullName-desc">Name (Z-A)</option>
+                        </select>
                     </div>
                 </div>
 
                 <DataTable
                     columns={columns}
-                    data={staff}
+                    data={filteredStaff}
                     isLoading={loading}
                     emptyMessage="No staff members found"
                 />

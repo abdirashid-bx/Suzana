@@ -1,11 +1,17 @@
 .modal-lg {
-    max-width: 600px;
+    max-width: 700px;
 }
 
 .form-row {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: var(--spacing-md);
+}
+
+.disabled-action {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
 }
 
 @media (max-width: 600px) {

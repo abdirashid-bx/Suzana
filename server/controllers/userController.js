@@ -18,9 +18,16 @@ exports.getUsers = async (req, res) => {
             ];
         }
 
+        let sortOptions = {};
+        if (req.query.sortBy) {
+            sortOptions[req.query.sortBy] = req.query.sortOrder === 'desc' ? -1 : 1;
+        } else {
+            sortOptions.createdAt = -1;
+        }
+
         const users = await User.find(query)
             .populate('assignedGrade', 'name')
-            .sort({ createdAt: -1 });
+            .sort(sortOptions);
 
         res.json({ success: true, count: users.length, users });
     } catch (error) {
@@ -58,6 +65,11 @@ exports.createUser = async (req, res) => {
         const userExists = await User.findOne({ $or: [{ email }, { username }] });
         if (userExists) {
             return res.status(400).json({ message: 'User with this email or username already exists' });
+        }
+
+        // RBAC: Check if creator is allowed to assign the requested role
+        if (req.user.role !== 'super_admin' && role === 'super_admin') {
+            return res.status(403).json({ message: 'Only Super Admins can create other Super Admins' });
         }
 
         const user = await User.create({
@@ -99,6 +111,16 @@ exports.updateUser = async (req, res) => {
         const user = await User.findById(req.params.id);
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
+        }
+
+        // RBAC: Check if updater is allowed to edit this user
+        if (req.user.role !== 'super_admin') {
+            if (user.role === 'super_admin') {
+                return res.status(403).json({ message: 'You cannot modify a Super Admin account' });
+            }
+            if (role === 'super_admin') {
+                return res.status(403).json({ message: 'You cannot promote a user to Super Admin' });
+            }
         }
 
         // Update fields

@@ -13,13 +13,14 @@ const StudentsList = () => {
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
     const [selectedGrade, setSelectedGrade] = useState('');
+    const [status, setStatus] = useState('');
     const [sortBy, setSortBy] = useState('createdAt');
     const [sortOrder, setSortOrder] = useState('desc');
 
     useEffect(() => {
         fetchStudents();
         fetchGrades();
-    }, [selectedGrade, sortBy, sortOrder]);
+    }, [selectedGrade, status, sortBy, sortOrder]);
 
     const fetchStudents = async () => {
         try {
@@ -27,6 +28,7 @@ const StudentsList = () => {
             const params = {
                 grade: selectedGrade || undefined,
                 search: search || undefined,
+                status: status || undefined,
                 sortBy,
                 sortOrder
             };
@@ -102,15 +104,8 @@ const StudentsList = () => {
 
                     <div className="filter-group">
                         <select
-                            value={search} // Reusing search state for ID filter demo, generally handled by search input
-                            onChange={(e) => setSearch(e.target.value)}
-                            className="filter-select"
-                        >
-                            <option value="">Student ID</option>
-                        </select>
-                        <select
-                            value=""
-                            onChange={() => { }}
+                            value={status}
+                            onChange={(e) => setStatus(e.target.value)}
                             className="filter-select"
                         >
                             <option value="">All Status</option>
@@ -128,6 +123,15 @@ const StudentsList = () => {
                                     {grade.name}
                                 </option>
                             ))}
+                        </select>
+                        <select
+                            value={sortBy}
+                            onChange={(e) => setSortBy(e.target.value)}
+                            className="filter-select"
+                        >
+                            <option value="createdAt">Newest First</option>
+                            <option value="fullName">Name A-Z</option>
+                            <option value="admissionNo">Admission No</option>
                         </select>
                     </div>
                 </div>

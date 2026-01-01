@@ -220,10 +220,12 @@ const Dashboard = () => {
                                         <div className="recent-info">
                                             <span className="recent-name">{student.fullName}</span>
                                             <span className="recent-meta">
-                                                {student.grade?.name} • {student.admissionNo}
+                                                {student.admissionNo}
                                             </span>
                                         </div>
-                                        <span className="badge badge-maroon">{student.grade?.name}</span>
+                                        <span className="badge badge-maroon">
+                                            {student.grade?.name || 'Unassigned'}
+                                        </span>
                                     </li>
                                 ))}
                             </ul>
