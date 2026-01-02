@@ -12,8 +12,8 @@
 
 .card-logo {
     display: block;
-    margin: 0 auto 6px;
-    width: clamp(100px, 16vw, 150px);
+    margin: 0 auto -25px;
+    width: clamp(100px, 16vw, 160px);
     height: auto;
 }
 
