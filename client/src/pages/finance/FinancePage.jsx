@@ -5,6 +5,7 @@ import { feesAPI } from '../../services/api';
 import toast from 'react-hot-toast';
 import './FinancePage.css';
 import ConfirmModal from '../../components/common/ConfirmModal';
+import ReceiptModal from '../../components/finance/ReceiptModal';
 
 const FinancePage = () => {
     const { canManageFees } = useAuth();
@@ -15,6 +16,7 @@ const FinancePage = () => {
     const [payingId, setPayingId] = useState(null);
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [confirmPayload, setConfirmPayload] = useState({ feeId: null, amount: 0, studentName: '' });
+    const [receiptFee, setReceiptFee] = useState(null);
 
     useEffect(() => {
         fetchData();
@@ -194,7 +196,10 @@ const FinancePage = () => {
                                                         )}
                                                     </button>
                                                 ) : (
-                                                    <button className="btn btn-sm btn-ghost">
+                                                    <button
+                                                        className="btn btn-sm btn-ghost"
+                                                        onClick={() => setReceiptFee(fee)}
+                                                    >
                                                         Print Receipt
                                                     </button>
                                                 )}
@@ -223,6 +228,12 @@ const FinancePage = () => {
                 confirmText="Confirm"
                 cancelText="Cancel"
                 loading={payingId === confirmPayload.feeId}
+            />
+
+            <ReceiptModal
+                isOpen={!!receiptFee}
+                data={receiptFee}
+                onClose={() => setReceiptFee(null)}
             />
         </div>
     );
