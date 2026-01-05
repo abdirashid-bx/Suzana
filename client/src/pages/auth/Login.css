@@ -12,15 +12,14 @@
 
 .card-logo {
     display: block;
-    margin: 0 auto 10px;
-    width: 80px;
-    /* Smaller logo */
+    margin: 0 auto -25px;
+    width: clamp(100px, 16vw, 160px);
     height: auto;
 }
 
 .login-container {
     width: 100%;
-    max-width: 400px;
+    max-width: 450px;
     /* Tighter width */
     margin: 0 auto;
 }
@@ -34,21 +33,19 @@
 }
 
 .login-card-header {
-    padding: var(--spacing-lg) var(--spacing-lg) 0;
-    /* Reduced padding */
+    padding: 12px var(--spacing-lg) 0;
     text-align: center;
 }
 
 .login-card-header h2 {
-    font-size: 1.5rem;
-    /* Smaller heading */
+    font-size: 1.75rem;
     font-weight: 700;
     color: var(--color-gray-900);
-    margin: 0 0 4px;
+    margin: 0 0 2px;
 }
 
 .login-card-header p {
-    font-size: 0.875rem;
+    font-size: 1rem;
     color: var(--color-gray-600);
     margin: 0;
 }
@@ -100,7 +97,7 @@
     }
 
     .card-logo {
-        width: 60px;
+        width: clamp(60px, 200vw, 120px);
     }
 
     .login-container {

@@ -63,7 +63,7 @@ npm run dev
 - Backend API: http://localhost:5000
 
 ### Default Login Credentials
-- **Username:** admin
+- **Username:** Admin
 - **Password:** 12345678
 
 ## 📦 Features
