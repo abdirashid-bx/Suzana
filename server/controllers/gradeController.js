@@ -1,38 +1,123 @@
 const Grade = require('../models/Grade');
 const Classroom = require('../models/Classroom');
 const Student = require('../models/Student');
+const User = require('../models/User'); // Import User model to find assigned teachers
 
 // @desc    Get all grades
 // @route   GET /api/grades
 // @access  Private
 exports.getGrades = async (req, res) => {
     try {
-        // Build query filter
-        let filter = { isActive: true };
+        let matchStage = { isActive: true };
 
         // If user is a teacher, only show their assigned grade
         if (req.user.role === 'teacher' && req.user.assignedGrade) {
-            filter._id = req.user.assignedGrade;
+            matchStage._id = req.user.assignedGrade;
         }
 
-        const grades = await Grade.find(filter)
-            .populate('teacher', 'fullName email')
-            .sort({ order: 1 });
+        const grades = await Grade.aggregate([
+            { $match: matchStage },
+            { $sort: { order: 1 } },
+            // Populate Teacher
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: 'teacher',
+                    foreignField: '_id',
+                    as: 'teacher'
+                }
+            },
+            { $unwind: { path: '$teacher', preserveNullAndEmptyArrays: true } },
+            // If teacher is missing, try to find assigned user (legacy fallback)
+            {
+                $lookup: {
+                    from: 'users',
+                    let: { gradeId: '$_id' },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: {
+                                    $and: [
+                                        { $eq: ['$assignedGrade', '$$gradeId'] },
+                                        { $in: ['$role', ['teacher', 'head_teacher']] }
+                                    ]
+                                }
+                            }
+                        },
+                        { $project: { fullName: 1, email: 1 } }
+                    ],
+                    as: 'assignedTeacher'
+                }
+            },
+            {
+                $addFields: {
+                    teacher: {
+                        $cond: {
+                            if: { $ifNull: ['$teacher', false] },
+                            then: '$teacher',
+                            else: { $arrayElemAt: ['$assignedTeacher', 0] }
+                        }
+                    }
+                }
+            },
+            // Lookup Classrooms
+            {
+                $lookup: {
+                    from: 'classrooms',
+                    let: { gradeId: '$_id' },
+                    pipeline: [
+                        { $match: { $expr: { $and: [{ $eq: ['$grade', '$$gradeId'] }, { $eq: ['$isActive', true] }] } } },
+                        // Get student count for each classroom
+                        {
+                            $lookup: {
+                                from: 'students',
+                                let: { classroomId: '$_id' },
+                                pipeline: [
+                                    { $match: { $expr: { $and: [{ $eq: ['$classroom', '$$classroomId'] }, { $eq: ['$status', 'active'] }] } } },
+                                    { $count: 'count' }
+                                ],
+                                as: 'studentCountData'
+                            }
+                        },
+                        {
+                            $addFields: {
+                                currentCount: { $ifNull: [{ $arrayElemAt: ['$studentCountData.count', 0] }, 0] }
+                            }
+                        },
+                        { $project: { studentCountData: 0 } }
+                    ],
+                    as: 'classrooms'
+                }
+            },
+            // Calculate total students for the grade
+            {
+                $lookup: {
+                    from: 'students',
+                    let: { gradeId: '$_id' },
+                    pipeline: [
+                        { $match: { $expr: { $and: [{ $eq: ['$grade', '$$gradeId'] }, { $eq: ['$status', 'active'] }] } } },
+                        { $count: 'count' }
+                    ],
+                    as: 'totalStudentsData'
+                }
+            },
+            {
+                $addFields: {
+                    studentCount: { $ifNull: [{ $arrayElemAt: ['$totalStudentsData.count', 0] }, 0] },
+                    classroomCount: { $size: '$classrooms' }
+                }
+            },
+            {
+                $project: {
+                    assignedTeacher: 0,
+                    totalStudentsData: 0,
+                    'teacher.password': 0,
+                    'teacher.__v': 0
+                }
+            }
+        ]);
 
-        // Get classroom and student counts for each grade
-        const gradesWithStats = await Promise.all(grades.map(async (grade) => {
-            const classrooms = await Classroom.find({ grade: grade._id, isActive: true });
-            const studentCount = await Student.countDocuments({ grade: grade._id, status: 'active' });
-
-            return {
-                ...grade.toObject(),
-                classroomCount: classrooms.length,
-                studentCount,
-                classrooms
-            };
-        }));
-
-        res.json({ success: true, grades: gradesWithStats });
+        res.json({ success: true, grades });
     } catch (error) {
         console.error('Get grades error:', error);
         res.status(500).json({ message: error.message || 'An unexpected error occurred' });
@@ -61,12 +146,22 @@ exports.getGrade = async (req, res) => {
         const students = await Student.find({ grade: grade._id, status: 'active' })
             .populate('classroom', 'name');
 
+        // If teacher is missing in Grade, try to find a User who has this grade assigned
+        let teacher = grade.teacher;
+        if (!teacher) {
+            const assignedUser = await User.findOne({ assignedGrade: grade._id, role: { $in: ['teacher', 'head_teacher'] } }).select('fullName email phone');
+            if (assignedUser) {
+                teacher = assignedUser;
+            }
+        }
+
         console.log(`Found ${students.length} students`);
 
         res.json({
             success: true,
             grade: {
                 ...grade.toObject(),
+                teacher, // Override with found teacher if applicable
                 classrooms,
                 students,
                 studentCount: students.length

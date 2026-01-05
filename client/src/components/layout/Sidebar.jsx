@@ -24,7 +24,7 @@ const Sidebar = ({ collapsed, onToggle, onProfileClick }) => {
             path: '/',
             icon: FiHome,
             label: 'Dashboard',
-            show: true
+            show: user?.role !== 'teacher'
         },
         {
             path: '/students',

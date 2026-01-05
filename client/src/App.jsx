@@ -63,6 +63,17 @@ const PublicRoute = ({ children }) => {
   return children;
 };
 
+// Dashboard Route with Redirect for Teachers
+const DashboardRoute = () => {
+  const { user } = useAuth();
+
+  if (user?.role === 'teacher') {
+    return <Navigate to="/grades" replace />;
+  }
+
+  return <Dashboard />;
+};
+
 function AppRoutes() {
   return (
     <Routes>
@@ -84,7 +95,7 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       >
-        <Route path="/" element={<Dashboard />} />
+        <Route path="/" element={<DashboardRoute />} />
 
         {/* Students */}
         <Route path="/students" element={<StudentsList />} />

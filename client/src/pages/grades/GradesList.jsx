@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FiPlus, FiUsers, FiEdit2, FiTrash2, FiAlertTriangle } from 'react-icons/fi';
 import { useAuth } from '../../context/AuthContext';
-import { gradesAPI } from '../../services/api';
+import { gradesAPI, staffAPI } from '../../services/api';
 import toast from 'react-hot-toast';
 import './GradesList.css';
 
@@ -11,11 +11,12 @@ const GradesList = () => {
     const { isAdmin, canDelete } = useAuth();
     const [grades, setGrades] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [teachers, setTeachers] = useState([]);
 
     // Create/Edit Modal State
     const [showModal, setShowModal] = useState(false);
     const [editingGrade, setEditingGrade] = useState(null);
-    const [gradeForm, setGradeForm] = useState({ name: '', description: '' });
+    const [gradeForm, setGradeForm] = useState({ name: '', description: '', teacher: '' });
 
     // Delete Modal State
     const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -23,7 +24,17 @@ const GradesList = () => {
 
     useEffect(() => {
         fetchGrades();
+        fetchTeachers();
     }, []);
+
+    const fetchTeachers = async () => {
+        try {
+            const response = await staffAPI.getAll({ role: 'teacher' });
+            setTeachers(response.data.staff || []);
+        } catch (error) {
+            console.error('Failed to fetch teachers:', error);
+        }
+    };
 
     const fetchGrades = async () => {
         try {
@@ -39,10 +50,10 @@ const GradesList = () => {
     const handleOpenModal = (grade = null) => {
         if (grade) {
             setEditingGrade(grade);
-            setGradeForm({ name: grade.name, description: grade.description || '' });
+            setGradeForm({ name: grade.name, description: grade.description || '', teacher: grade.teacher?._id || '' });
         } else {
             setEditingGrade(null);
-            setGradeForm({ name: '', description: '' });
+            setGradeForm({ name: '', description: '', teacher: '' });
         }
         setShowModal(true);
     };
@@ -63,7 +74,7 @@ const GradesList = () => {
                 toast.success('Grade created successfully');
             }
             setShowModal(false);
-            setGradeForm({ name: '', description: '' });
+            setGradeForm({ name: '', description: '', teacher: '' });
             setEditingGrade(null);
             fetchGrades();
         } catch (error) {
@@ -128,14 +139,14 @@ const GradesList = () => {
                                         className="btn btn-icon "
                                         onClick={() => handleOpenModal(grade)}
                                     >
-                                        <FiEdit2 className='hover:text-white'/>
+                                        <FiEdit2 className='hover:text-white' />
                                     </button>
                                     {canDelete() && (
                                         <button
                                             className="btn btn-icon  text-danger"
                                             onClick={() => confirmDelete(grade)}
                                         >
-                                            <FiTrash2 className='hover:text-white'/>
+                                            <FiTrash2 className='hover:text-white' />
                                         </button>
                                     )}
                                 </div>
@@ -208,6 +219,21 @@ const GradesList = () => {
                                         onChange={(e) => setGradeForm({ ...gradeForm, description: e.target.value })}
                                         rows={3}
                                     />
+                                </div>
+                                <div className="form-group">
+                                    <label className="form-label">Class Teacher</label>
+                                    <select
+                                        className="form-select"
+                                        value={gradeForm.teacher}
+                                        onChange={(e) => setGradeForm({ ...gradeForm, teacher: e.target.value })}
+                                    >
+                                        <option value="">Select a teacher</option>
+                                        {teachers.map((teacher) => (
+                                            <option key={teacher._id} value={teacher._id}>
+                                                {teacher.fullName}
+                                            </option>
+                                        ))}
+                                    </select>
                                 </div>
                             </div>
                             <div className="modal-footer">

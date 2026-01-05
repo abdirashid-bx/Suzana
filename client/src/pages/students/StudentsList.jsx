@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { FiPlus, FiSearch, FiFilter, FiEye, FiEdit2, FiTrash2, FiChevronDown } from 'react-icons/fi';
+import { FiPlus, FiSearch, FiEye, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import { useAuth } from '../../context/AuthContext';
 import { studentsAPI, gradesAPI } from '../../services/api';
 import toast from 'react-hot-toast';
 import './Students.css';
 
 const StudentsList = () => {
-    const { canManageStudents, canDelete } = useAuth();
+    const { canManageStudents } = useAuth();
     const [students, setStudents] = useState([]);
     const [grades, setGrades] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -17,10 +17,16 @@ const StudentsList = () => {
     const [sortBy, setSortBy] = useState('createdAt');
     const [sortOrder, setSortOrder] = useState('desc');
 
+    // Pagination State
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [totalStudents, setTotalStudents] = useState(0);
+    const ITEMS_PER_PAGE = 20;
+
     useEffect(() => {
         fetchStudents();
         fetchGrades();
-    }, [selectedGrade, status, sortBy, sortOrder]);
+    }, [selectedGrade, status, sortBy, sortOrder, page]); // Add page dependency
 
     const fetchStudents = async () => {
         try {
@@ -30,12 +36,26 @@ const StudentsList = () => {
                 search: search || undefined,
                 status: status || undefined,
                 sortBy,
-                sortOrder
+                sortOrder,
+                page,
+                limit: ITEMS_PER_PAGE
             };
             const response = await studentsAPI.getAll(params);
-            setStudents(response.data.students || []);
+
+            // Handle both paginated and non-paginated responses for safety
+            if (response.data.pagination) {
+                setStudents(response.data.students || []);
+                setTotalPages(response.data.pagination.totalPages);
+                setTotalStudents(response.data.pagination.total);
+            } else {
+                // Fallback for non-paginated API
+                setStudents(response.data.students || []);
+                setTotalPages(1);
+                setTotalStudents(response.data.count || 0);
+            }
         } catch (error) {
             toast.error('Failed to fetch students');
+            console.error(error);
         } finally {
             setLoading(false);
         }
@@ -52,34 +72,21 @@ const StudentsList = () => {
 
     const handleSearch = (e) => {
         e.preventDefault();
+        setPage(1); // Reset to page 1 on search
         fetchStudents();
     };
 
-    const handleDelete = async (id, name) => {
-        if (!window.confirm(`Are you sure you want to delete ${name}? This action cannot be undone.`)) {
-            return;
-        }
-
-        try {
-            await studentsAPI.delete(id);
-            toast.success('Student deleted successfully');
-            fetchStudents();
-        } catch (error) {
-            toast.error('Failed to delete student');
-        }
+    const handleFilterChange = (setter) => (e) => {
+        setter(e.target.value);
+        setPage(1); // Reset to page 1 on filter change
     };
-
-    const filteredStudents = students.filter(student =>
-        student.fullName.toLowerCase().includes(search.toLowerCase()) ||
-        student.admissionNo.toLowerCase().includes(search.toLowerCase())
-    );
 
     return (
         <div className="students-page">
             <div className="page-header">
                 <div className="page-header-left">
                     <h1>Students</h1>
-                    <span className="count-badge">{filteredStudents.length} students</span>
+                    <span className="count-badge">{totalStudents} students</span>
                 </div>
                 {canManageStudents() && (
                     <Link to="/students/new" className="btn btn-primary">
@@ -105,7 +112,7 @@ const StudentsList = () => {
                     <div className="filter-group">
                         <select
                             value={status}
-                            onChange={(e) => setStatus(e.target.value)}
+                            onChange={handleFilterChange(setStatus)}
                             className="filter-select"
                         >
                             <option value="">All Status</option>
@@ -114,7 +121,7 @@ const StudentsList = () => {
                         </select>
                         <select
                             value={selectedGrade}
-                            onChange={(e) => setSelectedGrade(e.target.value)}
+                            onChange={handleFilterChange(setSelectedGrade)}
                             className="filter-select"
                         >
                             <option value="">All Classes</option>
@@ -142,55 +149,80 @@ const StudentsList = () => {
                         <div className="spinner"></div>
                         <p>Loading students...</p>
                     </div>
-                ) : filteredStudents.length > 0 ? (
-                    <div className="table-container">
-                        <table className="table">
-                            <thead>
-                                <tr>
-                                    <th>Photo</th>
-                                    <th>Student ID</th>
-                                    <th>Name</th>
-                                    <th>Gender</th>
-                                    <th>Class</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {filteredStudents.map((student) => (
-                                    <tr key={student._id}>
-                                        <td>
-                                            <div className="student-avatar-small">
-                                                {student.photo ? (
-                                                    <img src={student.photo} alt={student.fullName} />
-                                                ) : (
-                                                    <span>{student.fullName?.charAt(0)}</span>
-                                                )}
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <span className="student-id">{student.admissionNo}</span>
-                                        </td>
-                                        <td>
-                                            <span className="student-name">{student.fullName}</span>
-                                        </td>
-                                        <td>{student.gender}</td>
-                                        <td>{student.classroom?.name}</td>
-                                        <td>
-                                            <span className={`status-pill status-${student.status}`}>
-                                                {student.status}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <Link to={`/students/${student._id}`} className="btn-view">
-                                                View
-                                            </Link>
-                                        </td>
+                ) : students.length > 0 ? (
+                    <>
+                        <div className="table-container">
+                            <table className="table">
+                                <thead>
+                                    <tr>
+                                        <th>Photo</th>
+                                        <th>Student ID</th>
+                                        <th>Name</th>
+                                        <th>Gender</th>
+                                        <th>Class</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                                </thead>
+                                <tbody>
+                                    {students.map((student) => (
+                                        <tr key={student._id}>
+                                            <td>
+                                                <div className="student-avatar-small">
+                                                    {student.photo ? (
+                                                        <img src={student.photo} alt={student.fullName} />
+                                                    ) : (
+                                                        <span>{student.fullName?.charAt(0)}</span>
+                                                    )}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span className="student-id">{student.admissionNo}</span>
+                                            </td>
+                                            <td>
+                                                <span className="student-name">{student.fullName}</span>
+                                            </td>
+                                            <td>{student.gender}</td>
+                                            <td>{student.classroom?.name}</td>
+                                            <td>
+                                                <span className={`status-pill status-${student.status}`}>
+                                                    {student.status}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <Link to={`/students/${student._id}`} className="btn-view">
+                                                    View
+                                                </Link>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {/* Pagination Controls */}
+                        {totalPages > 1 && (
+                            <div className="pagination-controls">
+                                <button
+                                    className="btn btn-outline"
+                                    disabled={page === 1}
+                                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                                >
+                                    <FiChevronLeft /> Previous
+                                </button>
+                                <span className="pagination-info">
+                                    Page {page} of {totalPages}
+                                </span>
+                                <button
+                                    className="btn btn-outline"
+                                    disabled={page === totalPages}
+                                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                                >
+                                    Next <FiChevronRight />
+                                </button>
+                            </div>
+                        )}
+                    </>
                 ) : (
                     <div className="empty-state">
                         <FiSearch className="empty-icon" />

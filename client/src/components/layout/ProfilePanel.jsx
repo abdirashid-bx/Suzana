@@ -5,7 +5,7 @@ import toast from 'react-hot-toast';
 import './ProfilePanel.css';
 
 const ProfilePanel = ({ isOpen, onClose }) => {
-    const { user, updateProfile } = useAuth();
+    const { user, updateProfile, updatePassword } = useAuth();
     const [isEditing, setIsEditing] = useState(false);
     const [showPasswordSection, setShowPasswordSection] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -53,10 +53,10 @@ const ProfilePanel = ({ isOpen, onClose }) => {
         try {
             setLoading(true);
 
-            // Validate password if changing
-            if (showPasswordSection) {
-                if (!passwordData.currentPassword || !passwordData.newPassword) {
-                    toast.error('Please fill in all password fields');
+            // 1. Handle Password Update (if section open and new password provided)
+            if (showPasswordSection && passwordData.newPassword) {
+                if (!passwordData.currentPassword) {
+                    toast.error('Please enter your current password');
                     setLoading(false);
                     return;
                 }
@@ -70,16 +70,36 @@ const ProfilePanel = ({ isOpen, onClose }) => {
                     setLoading(false);
                     return;
                 }
+
+                try {
+                    // Using AuthContext's updatePassword which hits /api/auth/password
+                    // This endpoint checks for currentPassword validity
+                    await updatePassword(passwordData.currentPassword, passwordData.newPassword);
+                    toast.success('Password updated successfully');
+                } catch (pwdError) {
+                    console.error(pwdError);
+                    toast.error(pwdError.response?.data?.message || 'Failed to update password');
+                    setLoading(false);
+                    return; // Stop if password update fails
+                }
             }
 
-            const updateData = { ...formData };
-            if (showPasswordSection && passwordData.newPassword) {
-                updateData.password = passwordData.newPassword;
+            // 2. Handle Profile Info Update
+            // Check if any profile fields changed
+            const hasProfileChanges =
+                formData.fullName !== user.fullName ||
+                formData.email !== user.email ||
+                formData.username !== user.username ||
+                formData.phone !== user.phone;
+
+            if (hasProfileChanges) {
+                await updateProfile(formData);
+                toast.success('Profile information updated');
+            } else if (!showPasswordSection || !passwordData.newPassword) {
+                // specific case: clicked save but nothing changed
+                toast('No changes to save');
             }
 
-            await updateProfile(updateData);
-
-            toast.success('Profile updated successfully');
             setIsEditing(false);
             setShowPasswordSection(false);
             setPasswordData({
@@ -88,6 +108,7 @@ const ProfilePanel = ({ isOpen, onClose }) => {
                 confirmPassword: ''
             });
         } catch (error) {
+            console.error(error);
             toast.error(error.response?.data?.message || 'Failed to update profile');
         } finally {
             setLoading(false);
@@ -238,6 +259,17 @@ const ProfilePanel = ({ isOpen, onClose }) => {
 
                             {showPasswordSection && (
                                 <div className="profile-password-fields">
+                                    <div className="profile-form-group">
+                                        <label className="profile-label">Current Password</label>
+                                        <input
+                                            type="password"
+                                            name="currentPassword"
+                                            value={passwordData.currentPassword}
+                                            onChange={handlePasswordChange}
+                                            className="profile-input"
+                                            placeholder="Enter current password"
+                                        />
+                                    </div>
                                     <div className="profile-form-group">
                                         <label className="profile-label">New Password</label>
                                         <input

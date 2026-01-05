@@ -1,6 +1,5 @@
 import { useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { FiBell, FiSearch } from 'react-icons/fi';
 import './Header.css';
 
 const Header = ({ onProfileClick }) => {
@@ -49,19 +48,7 @@ const Header = ({ onProfileClick }) => {
             </div>
 
             <div className="header-right">
-                <div className="search-box">
-                    <FiSearch className="search-icon" />
-                    <input
-                        type="text"
-                        placeholder="Search..."
-                        className="search-input"
-                    />
-                </div>
 
-                <button className="notification-btn">
-                    <FiBell />
-                    <span className="notification-dot"></span>
-                </button>
 
                 <div className="header-user" onClick={onProfileClick}>
                     <div className="header-avatar">

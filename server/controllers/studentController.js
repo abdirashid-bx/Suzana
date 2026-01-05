@@ -48,7 +48,7 @@ const findOrCreateClassroom = async (gradeId) => {
 // @access  Private
 exports.getStudents = async (req, res) => {
     try {
-        const { grade, search, status, sortBy, sortOrder } = req.query;
+        const { grade, search, status, sortBy, sortOrder, page, limit } = req.query;
         let query = {};
 
         if (grade) query.grade = grade;
@@ -68,13 +68,41 @@ exports.getStudents = async (req, res) => {
             sortOptions.createdAt = -1;
         }
 
-        const students = await Student.find(query)
+        // Pagination setup
+        const pageNum = parseInt(page, 10) || 1;
+        const limitNum = parseInt(limit, 10) || 0; // 0 means return all (backward compatibility)
+        const startIndex = (pageNum - 1) * limitNum;
+
+        let studentsQuery = Student.find(query)
             .populate('grade', 'name order')
             .populate('classroom', 'name suffix')
-            .sort(sortOptions)
-            .lean();
+            .sort(sortOptions);
 
-        res.json({ success: true, count: students.length, students });
+        if (limitNum > 0) {
+            studentsQuery = studentsQuery.skip(startIndex).limit(limitNum);
+        }
+
+        const students = await studentsQuery;
+
+        // Pagination result
+        let pagination = {};
+        if (limitNum > 0) {
+            const total = await Student.countDocuments(query);
+            pagination = {
+                page: pageNum,
+                limit: limitNum,
+                totalPages: Math.ceil(total / limitNum),
+                total
+            };
+        } else {
+            pagination = {
+                total: students.length,
+                page: 1,
+                totalPages: 1
+            };
+        }
+
+        res.json({ success: true, count: students.length, pagination, students });
     } catch (error) {
         logError('Get students error:', error);
         res.status(500).json({ message: 'Server error', error: error.message });
@@ -91,8 +119,7 @@ exports.getStudent = async (req, res) => {
         const student = await Student.findById(req.params.id)
             .populate('grade', 'name order')
             .populate('classroom', 'name suffix')
-            .populate('registeredBy', 'fullName')
-            .lean();
+            .populate('registeredBy', 'fullName');
 
         if (!student) {
             console.log(`[DEBUG] Student not found for ID: ${req.params.id}`);
@@ -272,8 +299,7 @@ exports.updateStudent = async (req, res) => {
             { new: true, runValidators: true }
         )
             .populate('grade', 'name')
-            .populate('classroom', 'name')
-            .lean();
+            .populate('classroom', 'name');
 
         res.json({ success: true, student: updatedStudent });
     } catch (error) {
