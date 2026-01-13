@@ -5,6 +5,7 @@ import { usersAPI, gradesAPI } from '../../services/api';
 import toast from 'react-hot-toast';
 import '../students/Students.css';
 import './UsersPage.css';
+import DeleteConfirmationModal from '../../components/common/DeleteConfirmationModal';
 
 const UsersPage = () => {
     const { canDelete, user: currentUser } = useAuth();
@@ -25,6 +26,11 @@ const UsersPage = () => {
         phone: '',
         assignedGrade: ''
     });
+
+    // Delete Confirmation State
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [userToDelete, setUserToDelete] = useState(null);
+    const [deleteLoading, setDeleteLoading] = useState(false);
 
     useEffect(() => {
         fetchUsers();
@@ -88,15 +94,25 @@ const UsersPage = () => {
         setShowModal(true);
     };
 
-    const handleDelete = async (id, name) => {
-        if (!window.confirm(`Are you sure you want to delete user ${name}?`)) return;
+    const handleDelete = (id, name) => {
+        setUserToDelete({ id, name });
+        setShowDeleteConfirm(true);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (!userToDelete) return;
 
         try {
-            await usersAPI.delete(id);
+            setDeleteLoading(true);
+            await usersAPI.delete(userToDelete.id);
             toast.success('User deleted successfully');
             fetchUsers();
+            setShowDeleteConfirm(false);
+            setUserToDelete(null);
         } catch (error) {
             toast.error(error.response?.data?.message || 'Failed to delete user');
+        } finally {
+            setDeleteLoading(false);
         }
     };
 
@@ -361,7 +377,19 @@ const UsersPage = () => {
                     </div>
                 )
             }
-        </div >
+            {/* Delete Confirmation Modal */}
+            <DeleteConfirmationModal
+                isOpen={showDeleteConfirm}
+                onClose={() => setShowDeleteConfirm(false)}
+                onConfirm={handleConfirmDelete}
+                itemName={userToDelete?.name}
+                title="Delete User?"
+                message={<span>Are you sure you want to delete user <strong>{userToDelete?.name}</strong>?</span>}
+                subMessage="This action cannot be undone."
+                confirmText="Delete User"
+                isLoading={deleteLoading}
+            />
+        </div>
     );
 };
 

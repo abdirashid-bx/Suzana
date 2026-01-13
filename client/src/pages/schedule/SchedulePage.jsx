@@ -4,6 +4,7 @@ import { gradesAPI, schedulesAPI } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import toast from 'react-hot-toast';
 import './SchedulePage.css';
+import DeleteConfirmationModal from '../../components/common/DeleteConfirmationModal';
 
 const SchedulePage = () => {
     const { isAdmin } = useAuth();
@@ -22,6 +23,10 @@ const SchedulePage = () => {
         activity: '',
         type: 'class'
     });
+
+    // Delete Confirmation State
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [deleteLoading, setDeleteLoading] = useState(false);
 
     useEffect(() => {
         fetchGrades();
@@ -153,20 +158,24 @@ const SchedulePage = () => {
         }
     };
 
-    const handleDeleteAll = async () => {
+    const handleDeleteAll = () => {
+        setShowDeleteConfirm(true);
+    };
+
+    const handleConfirmDelete = async () => {
         const gradeName = grades.find(g => g._id === selectedGrade)?.name;
 
-        if (!window.confirm(`Are you sure you want to delete ALL schedules for ${gradeName}?\n\nThis will remove all periods from Monday to Friday.\n\nThis action cannot be undone.`)) {
-            return;
-        }
-
         try {
+            setDeleteLoading(true);
             await schedulesAPI.deleteAllByGrade(selectedGrade);
             toast.success(`All schedules deleted for ${gradeName}`);
             fetchSchedule();
+            setShowDeleteConfirm(false);
         } catch (error) {
             toast.error('Failed to delete schedules');
             console.error(error);
+        } finally {
+            setDeleteLoading(false);
         }
     };
 
@@ -369,6 +378,18 @@ const SchedulePage = () => {
                     </div>
                 </div>
             )}
+            {/* Delete Confirmation Modal */}
+            <DeleteConfirmationModal
+                isOpen={showDeleteConfirm}
+                onClose={() => setShowDeleteConfirm(false)}
+                onConfirm={handleConfirmDelete}
+                itemName={grades.find(g => g._id === selectedGrade)?.name}
+                title="Delete Schedule?"
+                message={<span>Are you sure you want to delete the schedule for <strong>{grades.find(g => g._id === selectedGrade)?.name}</strong>?</span>}
+                subMessage="This will also delete associated class periods. This action cannot be undone."
+                confirmText="Delete Schedule"
+                isLoading={deleteLoading}
+            />
         </div>
     );
 };

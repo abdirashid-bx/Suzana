@@ -1,0 +1,126 @@
+.dcm-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.dcm-modal {
+    background: white;
+    border-radius: 12px;
+    padding: 32px;
+    width: 90%;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    animation: slideIn 0.3s ease-out;
+}
+
+.dcm-icon-wrapper {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background-color: #FEE2E2; /* Light red background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.dcm-icon {
+    font-size: 28px;
+    color: #DC2626; /* Red icon color */
+}
+
+.dcm-content {
+    margin-bottom: 32px;
+}
+
+.dcm-message {
+    color: #374151;
+    font-size: 16px;
+    line-height: 1.5;
+    margin: 0 0 8px 0;
+}
+
+.dcm-message strong {
+    color: #111827;
+    font-weight: 600;
+}
+
+.dcm-sub-message {
+    color: #6B7280;
+    font-size: 14px;
+    margin: 0;
+}
+
+.dcm-actions {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+    justify-content: center;
+}
+
+.dcm-btn {
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    outline: none;
+    min-width: 100px;
+}
+
+.dcm-btn-cancel {
+    background-color: transparent;
+    color: #4B5563;
+}
+
+.dcm-btn-cancel:hover {
+    background-color: #F3F4F6;
+    color: #111827;
+}
+
+.dcm-btn-delete {
+    background-color: #EF4444;
+    color: white;
+    box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2);
+}
+
+.dcm-btn-delete:hover {
+    background-color: #DC2626;
+    box-shadow: 0 4px 6px rgba(220, 38, 38, 0.3);
+}
+
+.dcm-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideIn {
+    from { 
+        transform: translateY(20px);
+        opacity: 0; 
+    }
+    to { 
+        transform: translateY(0);
+        opacity: 1; 
+    }
+}
