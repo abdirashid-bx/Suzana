@@ -250,7 +250,15 @@ exports.updateStudent = async (req, res) => {
         }
 
         // Handle photo upload
+        // Handle photo upload
         if (req.file) {
+            // Delete old photo if exists
+            if (student.photo) {
+                const oldPhotoPath = path.join(__dirname, '../', student.photo);
+                if (fs.existsSync(oldPhotoPath)) {
+                    fs.unlinkSync(oldPhotoPath);
+                }
+            }
             updates.photo = `/uploads/photos/${req.file.filename}`;
         }
 
@@ -329,6 +337,14 @@ exports.deleteStudent = async (req, res) => {
 
         // Delete associated fees
         await Fee.deleteMany({ student: student._id });
+
+        // Delete photo if exists
+        if (student.photo) {
+            const photoPath = path.join(__dirname, '../', student.photo);
+            if (fs.existsSync(photoPath)) {
+                fs.unlinkSync(photoPath);
+            }
+        }
 
         await student.deleteOne();
 
