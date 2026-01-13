@@ -14,7 +14,7 @@ router.use(protect);
 
 router.route('/')
     .get(getGrades)
-    .post(authorize('admin'), createGrade);
+    .post(authorize('admin', 'head_teacher'), createGrade);
 
 router.route('/:id')
     .get(getGrade)

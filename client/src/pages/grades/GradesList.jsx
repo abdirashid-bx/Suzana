@@ -8,7 +8,7 @@ import './GradesList.css';
 
 const GradesList = () => {
     const navigate = useNavigate();
-    const { isAdmin, canDelete } = useAuth();
+    const { isAdmin, isHeadTeacher, canDelete } = useAuth();
     const [grades, setGrades] = useState([]);
     const [loading, setLoading] = useState(true);
     const [teachers, setTeachers] = useState([]);
@@ -117,7 +117,7 @@ const GradesList = () => {
                     <h1>Grades & Classes</h1>
                     <span className="count-badge">{grades.length} grades</span>
                 </div>
-                {isAdmin() && (
+                {isHeadTeacher() && (
                     <button onClick={() => handleOpenModal()} className="btn btn-primary">
                         <FiPlus /> Add Grade
                     </button>
@@ -133,7 +133,7 @@ const GradesList = () => {
                     >
                         <div className="grade-card-header">
                             <h3>{grade.name}</h3>
-                            {isAdmin() && (
+                            {(isHeadTeacher() || isAdmin()) && (
                                 <div className="grade-actions" onClick={(e) => e.stopPropagation()}>
                                     <button
                                         className="btn btn-icon "

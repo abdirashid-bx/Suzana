@@ -188,12 +188,9 @@ const UsersPage = () => {
                                     <tr key={user._id}>
                                         <td>
                                             <div className="student-info">
-                                                <div className="student-avatar">
-                                                    {user.fullName?.charAt(0)}
-                                                </div>
+
                                                 <div>
-                                                    <span className="student-name">{user.fullName}</span>
-                                                    <span className="student-gender">@{user.username}</span>
+                                                    <span className="student-gender">{user.username}</span>
                                                 </div>
                                             </div>
                                         </td>
