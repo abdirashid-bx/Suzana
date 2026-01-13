@@ -165,12 +165,10 @@ const GradesList = () => {
                                 </div>
                             </div>
 
-                            {grade.teacher && (
-                                <div className="grade-teacher">
-                                    <span className="label">Teacher:</span>
-                                    <span className="name">{grade.teacher.fullName}</span>
-                                </div>
-                            )}
+                            <div className="grade-teacher">
+                                <span className="label">Teacher:</span>
+                                <span className="name">{grade.teacher?.fullName || 'Not Assigned'}</span>
+                            </div>
 
                             {grade.classrooms && grade.classrooms.length > 0 && (
                                 <div className="classrooms-list">

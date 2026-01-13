@@ -211,7 +211,7 @@ const SchedulePage = () => {
                             onClick={handleDeleteAll}
                             title="Delete all schedules for this grade"
                         >
-                            <FiTrash /> Delete All
+                            <FiTrash /> Delete
                         </button>
                     )}
                 </div>

@@ -26,6 +26,21 @@ const AttendancePage = () => {
         }
     }, [selectedClassroom, date]);
 
+    // Auto-select grade and class for teachers and head teachers
+    useEffect(() => {
+        if ((user?.role === 'teacher' || user?.role === 'head_teacher') && user?.assignedGrade && grades.length > 0) {
+            const assignedGradeId = user.assignedGrade._id || user.assignedGrade;
+            const teacherGrade = grades.find(g => g._id === assignedGradeId);
+
+            if (teacherGrade) {
+                setSelectedGrade(teacherGrade._id);
+                if (teacherGrade.classrooms && teacherGrade.classrooms.length > 0) {
+                    setSelectedClassroom(teacherGrade.classrooms[0]._id);
+                }
+            }
+        }
+    }, [user, grades]);
+
     const fetchGrades = async () => {
         try {
             const response = await gradesAPI.getAll();

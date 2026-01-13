@@ -98,15 +98,15 @@ const StaffDetails = () => {
 
                     <div className="profile-stats">
                         <div className="stat-item">
-                            <span className="stat-label">Role</span>
+                            <span className="stat-label">Role : </span>
                             <span className="stat-value capitalize">{staff.role?.replace('_', ' ')}</span>
                         </div>
                         <div className="stat-item">
-                            <span className="stat-label">Gender</span>
+                            <span className="stat-label">Gender : </span>
                             <span className="stat-value capitalize">{staff.gender}</span>
                         </div>
                         <div className="stat-item">
-                            <span className="stat-label">Employment Date</span>
+                            <span className="stat-label">Employment Date : </span>
                             <span className="stat-value">
                                 {staff.dateOfEmployment ? format(new Date(staff.dateOfEmployment), 'dd MMM yyyy') : 'N/A'}
                             </span>
