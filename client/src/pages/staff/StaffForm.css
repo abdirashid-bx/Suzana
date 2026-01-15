@@ -222,3 +222,9 @@
         grid-column: span 1;
     }
 }
+
+/* Add spacing under the primary action in the header for visual balance */
+.page-header .header-actions .btn.btn-primary {
+    margin-bottom: var(--spacing-md);
+  
+}
