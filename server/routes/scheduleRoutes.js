@@ -16,15 +16,15 @@ router.use(protect);
 
 router.get('/grade/:gradeId', getScheduleByGrade);
 router.get('/today/:gradeId', getTodaySchedule);
-router.delete('/grade/:gradeId/all', authorize('admin'), deleteAllByGrade);
-router.post('/initialize/:gradeId', authorize('admin'), initializeSchedules);
+router.delete('/grade/:gradeId/all', authorize('admin', 'head_teacher'), deleteAllByGrade);
+router.post('/initialize/:gradeId', authorize('admin', 'head_teacher'), initializeSchedules);
 
 router.route('/')
     .get(getSchedules)
-    .post(authorize('admin'), createSchedule);
+    .post(authorize('admin', 'head_teacher'), createSchedule);
 
 router.route('/:id')
-    .put(authorize('admin'), updateSchedule)
+    .put(authorize('admin', 'head_teacher'), updateSchedule)
     .delete(canDelete, deleteSchedule);
 
 module.exports = router;

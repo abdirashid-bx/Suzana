@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
-import { FiPlus, FiEdit2, FiTrash2, FiSearch, FiEye, FiEyeOff } from 'react-icons/fi';
+import { FiPlus, FiEdit2, FiTrash2, FiSearch, FiEye, FiEyeOff, FiUserPlus } from 'react-icons/fi';
 import { useAuth } from '../../context/AuthContext';
 import { usersAPI, gradesAPI } from '../../services/api';
 import toast from 'react-hot-toast';
 import '../students/Students.css';
 import './UsersPage.css';
 import DeleteConfirmationModal from '../../components/common/DeleteConfirmationModal';
+import ImportUserPanel from './ImportUserPanel';
 
 const UsersPage = () => {
     const { canDelete, user: currentUser } = useAuth();
@@ -32,10 +33,23 @@ const UsersPage = () => {
     const [userToDelete, setUserToDelete] = useState(null);
     const [deleteLoading, setDeleteLoading] = useState(false);
 
+    // Import User Panel State
+    const [showImportPanel, setShowImportPanel] = useState(false);
+
+    useEffect(() => {
+        fetchGrades();
+    }, []);
+
     useEffect(() => {
         fetchUsers();
-        fetchGrades();
     }, [sortBy]);
+
+    useEffect(() => {
+        const delaySearch = setTimeout(() => {
+            fetchUsers();
+        }, 500);
+        return () => clearTimeout(delaySearch);
+    }, [search]);
 
     const fetchUsers = async () => {
         try {
@@ -130,6 +144,17 @@ const UsersPage = () => {
         });
     };
 
+    const handleImportUser = async (data) => {
+        try {
+            await usersAPI.importFromStaff(data);
+            toast.success('User successfully imported from staff');
+            fetchUsers();
+        } catch (error) {
+            toast.error(error.response?.data?.message || 'Failed to import user');
+            throw error; // Re-throw to let the panel handle it
+        }
+    };
+
     const getRoleBadge = (role) => {
         const colors = {
             admin: 'maroon',
@@ -151,9 +176,16 @@ const UsersPage = () => {
                     <h1>User Management</h1>
                     <span className="count-badge">{users.length} users</span>
                 </div>
-                <button onClick={() => { resetForm(); setShowModal(true); }} className="btn btn-primary">
-                    <FiPlus /> Add User
-                </button>
+                <div className="header-actions">
+                    <button
+                        onClick={() => setShowImportPanel(true)}
+                        className="btn btn-primary"
+                        style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+                    >
+                        <FiUserPlus /> Import from Staff
+                    </button>
+
+                </div>
             </div>
 
             <div className="table-card">
@@ -191,10 +223,10 @@ const UsersPage = () => {
                         <table className="table">
                             <thead>
                                 <tr>
-                                    <th>User</th>
+                                    <th>Full Name</th>
+                                    <th>Username</th>
                                     <th>Email</th>
                                     <th>Role</th>
-                                    <th>Assigned Grade</th>
                                     <th>Status</th>
                                     <th>Actions</th>
                                 </tr>
@@ -204,15 +236,14 @@ const UsersPage = () => {
                                     <tr key={user._id}>
                                         <td>
                                             <div className="student-info">
-
                                                 <div>
-                                                    <span className="student-gender">{user.username}</span>
+                                                    <span className="student-name">{user.fullName}</span>
                                                 </div>
                                             </div>
                                         </td>
+                                        <td>{user.username}</td>
                                         <td>{user.email}</td>
                                         <td>{getRoleBadge(user.role)}</td>
-                                        <td>{user.assignedGrade?.name || '-'}</td>
                                         <td>
                                             <span className={`badge badge-${user.isActive ? 'success' : 'error'}`}>
                                                 {user.isActive ? 'Active' : 'Inactive'}
@@ -348,21 +379,7 @@ const UsersPage = () => {
                                             </select>
                                         </div>
                                     </div>
-                                    {(formData.role === 'teacher' || formData.role === 'head_teacher') && (
-                                        <div className="form-group">
-                                            <label className="form-label">Assigned Grade</label>
-                                            <select
-                                                className="form-select"
-                                                value={formData.assignedGrade}
-                                                onChange={(e) => setFormData({ ...formData, assignedGrade: e.target.value })}
-                                            >
-                                                <option value="">Select Grade</option>
-                                                {grades.map(grade => (
-                                                    <option key={grade._id} value={grade._id}>{grade.name}</option>
-                                                ))}
-                                            </select>
-                                        </div>
-                                    )}
+
                                 </div>
                                 <div className="modal-footer">
                                     <button type="button" className="btn btn-ghost" onClick={() => setShowModal(false)}>
@@ -388,6 +405,13 @@ const UsersPage = () => {
                 subMessage="This action cannot be undone."
                 confirmText="Delete User"
                 isLoading={deleteLoading}
+            />
+
+            {/* Import User Panel */}
+            <ImportUserPanel
+                isOpen={showImportPanel}
+                onClose={() => setShowImportPanel(false)}
+                onSuccess={handleImportUser}
             />
         </div>
     );

@@ -10,7 +10,9 @@ exports.getStaff = async (req, res) => {
         const { role, search, status, sortBy, sortOrder } = req.query;
         let query = {};
 
-        if (role) query.role = role;
+        if (role) {
+            query.role = role.includes(',') ? { $in: role.split(',') } : role;
+        }
         if (status) query.status = status;
         if (search) {
             query.$or = [
@@ -242,3 +244,32 @@ exports.deleteStaff = async (req, res) => {
         res.status(500).json({ message: error.message || 'An unexpected error occurred' });
     }
 };
+
+// @desc    Get all unique roles from staff
+// @route   GET /api/staff/roles
+// @access  Private
+exports.getStaffRoles = async (req, res) => {
+    try {
+        const roles = await Staff.distinct('role');
+
+        // Get count of staff without user accounts for each role
+        const rolesWithCounts = await Promise.all(
+            roles.map(async (role) => {
+                const count = await Staff.countDocuments({
+                    role,
+                    userAccount: null
+                });
+                return { role, count };
+            })
+        );
+
+        res.json({
+            success: true,
+            roles: rolesWithCounts.filter(r => r.count > 0)
+        });
+    } catch (error) {
+        console.error('Get staff roles error:', error);
+        res.status(500).json({ message: error.message || 'An unexpected error occurred' });
+    }
+};
+

@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const Staff = require('../models/Staff');
 
 // @desc    Get current user profile
 // @route   GET /api/users/profile
@@ -219,6 +220,12 @@ exports.deleteUser = async (req, res) => {
 
         await user.deleteOne();
 
+        // Cleanup: Unlink from any staff member to allow re-import
+        await Staff.updateMany(
+            { userAccount: user._id },
+            { userAccount: null }
+        );
+
         res.json({ success: true, message: 'User deleted successfully' });
     } catch (error) {
         console.error('Delete user error:', error);
@@ -247,3 +254,90 @@ exports.resetPassword = async (req, res) => {
         res.status(500).json({ message: error.message || 'An unexpected error occurred' });
     }
 };
+
+// @desc    Import user from staff
+// @route   POST /api/users/import-from-staff
+// @access  Private/Admin
+exports.importFromStaff = async (req, res) => {
+    try {
+        const { staffId, username, password, confirmPassword } = req.body;
+
+        // Validate input
+        if (!staffId || !username || !password || !confirmPassword) {
+            return res.status(400).json({ message: 'All fields are required' });
+        }
+
+        // Check if passwords match
+        if (password !== confirmPassword) {
+            return res.status(400).json({ message: 'Passwords do not match' });
+        }
+
+        // Find the staff member
+        const staff = await Staff.findById(staffId);
+        if (!staff) {
+            return res.status(404).json({ message: 'Staff member not found' });
+        }
+
+        // Check if staff already has a user account
+        if (staff.userAccount) {
+            return res.status(400).json({
+                message: 'This staff member already has a system user account'
+            });
+        }
+
+        // Check if username already exists
+        const existingUser = await User.findOne({ username });
+        if (existingUser) {
+            return res.status(400).json({ message: 'Username already exists' });
+        }
+
+        // Map staff role to user role
+        const roleMapping = {
+            'admin': 'admin',
+            'head_teacher': 'head_teacher',
+            'teacher': 'teacher'
+        };
+
+        const userRole = roleMapping[staff.role];
+
+        if (!userRole) {
+            return res.status(400).json({
+                message: 'This staff role cannot be imported as a system user. Only Teachers, Head Teachers, and Admins are allowed.'
+            });
+        }
+
+        // Create user account
+        const user = await User.create({
+            username,
+            email: staff.email || `${username}@suzana.edu`,
+            password,
+            fullName: staff.fullName,
+            role: userRole,
+            phone: staff.phone,
+            assignedGrade: staff.assignedGrade || null
+        });
+
+        // Link user account to staff
+        staff.userAccount = user._id;
+        await staff.save();
+
+        res.status(201).json({
+            success: true,
+            message: 'User successfully imported from staff',
+            user: {
+                id: user._id,
+                username: user.username,
+                email: user.email,
+                fullName: user.fullName,
+                role: user.role
+            }
+        });
+    } catch (error) {
+        console.error('Import from staff error:', error);
+        if (error.code === 11000) {
+            return res.status(400).json({ message: 'Username or email already exists' });
+        }
+        res.status(500).json({ message: error.message || 'An unexpected error occurred' });
+    }
+};
+

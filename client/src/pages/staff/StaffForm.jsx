@@ -383,7 +383,6 @@ const StaffForm = () => {
                                     <option value="teacher">Teacher</option>
                                     <option value="head_teacher">Head Teacher</option>
                                     <option value="admin">Admin</option>
-                                    <option value="support_staff">Support Staff</option>
                                 </select>
                                 {getFieldError('role') && <span className="form-error">{getFieldError('role')}</span>}
                             </div>

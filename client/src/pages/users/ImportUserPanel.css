@@ -1,0 +1,238 @@
+/* Modal Overlay */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.2s ease-out;
+}
+
+/* Modal Content */
+.import-modal {
+    background: var(--card-bg, #fff);
+    width: 100%;
+    max-width: 500px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    animation: slideUp 0.3s ease-out;
+    margin: 1rem;
+    overflow: hidden;
+}
+
+/* Header */
+.import-modal-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-color, #e2e8f0);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--bg-secondary, #f8fafc);
+}
+
+.import-modal-header h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary, #1e293b);
+    margin: 0;
+}
+
+.close-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary, #64748b);
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.close-btn:hover {
+    background: rgba(0, 0, 0, 0.05);
+    color: var(--error-color, #ef4444);
+}
+
+/* Body */
+.import-modal-body {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+/* Form Groups */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-primary, #334155);
+}
+
+.modal-input,
+.modal-select {
+    width: 100%;
+    padding: 0.625rem 0.875rem;
+    border: 1px solid var(--border-color, #cbd5e1);
+    border-radius: 8px;
+    font-size: 0.9375rem;
+    background-color: var(--input-bg, #fff);
+    color: var(--text-primary, #1e293b);
+    transition: all 0.2s;
+}
+
+.modal-input:focus,
+.modal-select:focus {
+    outline: none;
+    border-color: var(--primary-color, #2563eb);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.modal-input.error,
+.modal-select.error {
+    border-color: var(--error-color, #ef4444);
+}
+
+.modal-select:disabled {
+    background-color: var(--bg-secondary, #f1f5f9);
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* Input with Icon */
+.input-with-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-icon {
+    position: absolute;
+    left: 0.75rem;
+    color: var(--text-secondary, #94a3b8);
+}
+
+.input-with-icon .modal-input {
+    padding-left: 2.25rem;
+}
+
+/* Password Toggle */
+.toggle-password {
+    position: absolute;
+    right: 0.75rem;
+    background: none;
+    border: none;
+    color: var(--text-secondary, #94a3b8);
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+}
+
+.toggle-password:hover {
+    color: var(--primary-color, #2563eb);
+}
+
+/* Error Text */
+.error-text {
+    font-size: 0.75rem;
+    color: var(--error-color, #ef4444);
+    margin-top: 0.125rem;
+}
+
+.info-text {
+    font-size: 0.75rem;
+    color: var(--text-secondary, #64748b);
+    margin-top: 0.25rem;
+    font-style: italic;
+}
+
+/* Error Banner */
+.error-banner {
+    padding: 0.75rem;
+    background-color: #fef2f2;
+    border: 1px solid #fee2e2;
+    color: #ef4444;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    text-align: center;
+}
+
+/* Footer */
+.import-modal-footer {
+    padding-top: 0.5rem;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.import-modal-footer .btn {
+    width: 100%;
+    padding: 0.75rem;
+    font-weight: 500;
+    font-size: 1rem;
+    justify-content: center;
+}
+
+/* Layout Util */
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .import-modal {
+        margin: 0;
+        height: 100vh;
+        max-width: 100%;
+        border-radius: 0;
+    }
+
+    .import-modal-body {
+        overflow-y: auto;
+        flex: 1;
+    }
+}

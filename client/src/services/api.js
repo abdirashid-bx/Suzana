@@ -52,7 +52,8 @@ export const usersAPI = {
     delete: (id) => api.delete(`/users/${id}`),
     resetPassword: (id, data) => api.put(`/users/${id}/reset-password`, data),
     getProfile: () => api.get('/users/profile'),
-    updateProfile: (data) => api.put('/users/profile', data)
+    updateProfile: (data) => api.put('/users/profile', data),
+    importFromStaff: (data) => api.post('/users/import-from-staff', data)
 };
 
 // Students API
@@ -87,7 +88,8 @@ export const staffAPI = {
     getById: (id) => api.get(`/staff/${id}`),
     create: (data) => api.post('/staff', data),
     update: (id, data) => api.put(`/staff/${id}`, data),
-    delete: (id) => api.delete(`/staff/${id}`)
+    delete: (id) => api.delete(`/staff/${id}`),
+    getRoles: () => api.get('/staff/roles')
 };
 
 // Grades API

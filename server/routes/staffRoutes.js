@@ -5,11 +5,14 @@ const {
     getStaffMember,
     createStaff,
     updateStaff,
-    deleteStaff
+    deleteStaff,
+    getStaffRoles
 } = require('../controllers/staffController');
 const { protect, canManageStaff, canDelete } = require('../middleware/auth');
 
 router.use(protect);
+
+router.get('/roles', getStaffRoles);
 
 router.route('/')
     .get(getStaff)

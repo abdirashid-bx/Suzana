@@ -2,6 +2,7 @@ const Grade = require('../models/Grade');
 const Classroom = require('../models/Classroom');
 const Student = require('../models/Student');
 const User = require('../models/User'); // Import User model to find assigned teachers
+const Staff = require('../models/Staff');
 
 // @desc    Get all grades
 // @route   GET /api/grades
@@ -10,9 +11,21 @@ exports.getGrades = async (req, res) => {
     try {
         let matchStage = { isActive: true };
 
-        // If user is a teacher, only show their assigned grade
-        if (req.user.role === 'teacher' && req.user.assignedGrade) {
-            matchStage._id = req.user.assignedGrade;
+        // If user is a teacher, only show their assigned grade based on STAFF record
+        if (req.user.role === 'teacher') {
+            // Find the staff record linked to this user
+            const linkedStaff = await Staff.findOne({ userAccount: req.user.id });
+
+            if (linkedStaff) {
+                // If found, show grades where this staff is the teacher
+                matchStage.teacher = linkedStaff._id;
+            } else if (req.user.assignedGrade) {
+                // Fallback: Use legacy user-based assignment if no staff ref exists
+                matchStage._id = req.user.assignedGrade;
+            } else {
+                // No assignment found
+                return res.json({ success: true, grades: [] });
+            }
         }
 
         const grades = await Grade.aggregate([
@@ -21,7 +34,7 @@ exports.getGrades = async (req, res) => {
             // Populate Teacher
             {
                 $lookup: {
-                    from: 'users',
+                    from: 'staffs',
                     localField: 'teacher',
                     foreignField: '_id',
                     as: 'teacher'

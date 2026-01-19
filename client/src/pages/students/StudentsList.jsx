@@ -24,9 +24,23 @@ const StudentsList = () => {
     const ITEMS_PER_PAGE = 20;
 
     useEffect(() => {
-        fetchStudents();
         fetchGrades();
-    }, [selectedGrade, status, sortBy, sortOrder, page]); // Add page dependency
+    }, []);
+
+    useEffect(() => {
+        fetchStudents();
+    }, [selectedGrade, status, sortBy, sortOrder, page]);
+
+    useEffect(() => {
+        const delaySearch = setTimeout(() => {
+            if (page !== 1) {
+                setPage(1);
+            } else {
+                fetchStudents();
+            }
+        }, 500);
+        return () => clearTimeout(delaySearch);
+    }, [search]);
 
     const fetchStudents = async () => {
         try {

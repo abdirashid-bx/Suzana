@@ -29,7 +29,7 @@ const GradesList = () => {
 
     const fetchTeachers = async () => {
         try {
-            const response = await staffAPI.getAll({ role: 'teacher' });
+            const response = await staffAPI.getAll({ role: 'teacher,head_teacher' });
             setTeachers(response.data.staff || []);
         } catch (error) {
             console.error('Failed to fetch teachers:', error);

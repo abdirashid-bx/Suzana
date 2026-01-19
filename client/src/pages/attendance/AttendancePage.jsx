@@ -27,15 +27,31 @@ const AttendancePage = () => {
     }, [selectedClassroom, date]);
 
     // Auto-select grade and class for teachers and head teachers
+    // Auto-select grade and class for teachers and head teachers
     useEffect(() => {
-        if ((user?.role === 'teacher' || user?.role === 'head_teacher') && user?.assignedGrade && grades.length > 0) {
-            const assignedGradeId = user.assignedGrade._id || user.assignedGrade;
-            const teacherGrade = grades.find(g => g._id === assignedGradeId);
+        if (!user || grades.length === 0) return;
 
-            if (teacherGrade) {
-                setSelectedGrade(teacherGrade._id);
-                if (teacherGrade.classrooms && teacherGrade.classrooms.length > 0) {
-                    setSelectedClassroom(teacherGrade.classrooms[0]._id);
+        if (user.role === 'teacher' || user.role === 'head_teacher') {
+            const userId = user._id || user.id;
+
+            // Try to find the grade assigned to this staff member
+            // We check if the grade's teacher (Staff) is linked to the current User
+            const assignedGrade = grades.find(g =>
+                g.teacher?.userAccount === userId ||
+                (typeof g.teacher?.userAccount === 'string' && g.teacher.userAccount === userId)
+            );
+
+            if (assignedGrade) {
+                setSelectedGrade(assignedGrade._id);
+                if (assignedGrade.classrooms && assignedGrade.classrooms.length > 0) {
+                    setSelectedClassroom(assignedGrade.classrooms[0]._id);
+                }
+            } else if (user.role === 'teacher' && grades.length > 0) {
+                // Fallback: If strict mapping fails but user is a teacher seeing filtered grades, pick the first one
+                const firstGrade = grades[0];
+                setSelectedGrade(firstGrade._id);
+                if (firstGrade.classrooms && firstGrade.classrooms.length > 0) {
+                    setSelectedClassroom(firstGrade.classrooms[0]._id);
                 }
             }
         }

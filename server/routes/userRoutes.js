@@ -8,7 +8,8 @@ const {
     deleteUser,
     resetPassword,
     getMe,
-    updateMe
+    updateMe,
+    importFromStaff
 } = require('../controllers/userController');
 const { protect, authorize, canDelete } = require('../middleware/auth');
 
@@ -30,5 +31,8 @@ router.route('/:id')
     .delete(canDelete, deleteUser);
 
 router.put('/:id/reset-password', resetPassword);
+
+// Import user from staff
+router.post('/import-from-staff', importFromStaff);
 
 module.exports = router;

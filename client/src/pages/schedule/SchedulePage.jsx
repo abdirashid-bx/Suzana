@@ -7,7 +7,7 @@ import './SchedulePage.css';
 import DeleteConfirmationModal from '../../components/common/DeleteConfirmationModal';
 
 const SchedulePage = () => {
-    const { isAdmin } = useAuth();
+    const { isAdmin, isHeadTeacher } = useAuth();
     const [grades, setGrades] = useState([]);
     const [selectedGrade, setSelectedGrade] = useState('');
     const [schedule, setSchedule] = useState(null);
@@ -214,7 +214,7 @@ const SchedulePage = () => {
                         ))}
                     </select>
 
-                    {isAdmin() && schedule && Object.values(schedule).some(day => day?.periods?.length > 0) && (
+                    {(isAdmin() || isHeadTeacher()) && schedule && Object.values(schedule).some(day => day?.periods?.length > 0) && (
                         <button
                             className="btn btn-danger"
                             onClick={handleDeleteAll}
@@ -250,7 +250,7 @@ const SchedulePage = () => {
                                             </div>
                                             <span className="period-type">{period.type}</span>
 
-                                            {isAdmin() && (
+                                            {(isAdmin() || isHeadTeacher()) && (
                                                 <div className="period-actions">
                                                     <button
                                                         className="btn-icon-small"
@@ -276,7 +276,7 @@ const SchedulePage = () => {
                                     </div>
                                 )}
 
-                                {isAdmin() && (
+                                {(isAdmin() || isHeadTeacher()) && (
                                     <button
                                         className="btn-add-period"
                                         onClick={() => handleAddPeriod(day)}
