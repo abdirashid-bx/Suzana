@@ -6,15 +6,6 @@ export default defineConfig({
   plugins: [react(),tailwindcss()],
   server: {
     port: 3000,
-    proxy: {
-      '/api': {
-        target: 'https://suzana-system.onrender.com',
-        changeOrigin: true
-      },
-      '/uploads': {
-        target: 'https://suzana-system.onrender.com',
-        changeOrigin: true
-      }
-    }
+   
   }
 })
