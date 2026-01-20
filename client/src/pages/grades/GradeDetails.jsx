@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { FiArrowLeft, FiUser, FiUsers, FiSearch, FiFileText } from 'react-icons/fi';
-import { gradesAPI } from '../../services/api';
+import api, { gradesAPI } from '../../services/api';
 import DataTable from '../../components/common/DataTable';
 import toast from 'react-hot-toast';
 import './GradesList.css'; // Reuse existing styles
@@ -67,7 +67,7 @@ const GradeDetails = () => {
             render: (row) => (
                 <div className="student-avatar-small">
                     {row.photo ? (
-                        <img src={row.photo} alt={row.fullName} />
+                        <img src={`${api.defaults.baseURL.replace('/api', '')}${row.photo}`} alt={row.fullName} />
                     ) : (
                         <div className="avatar-placeholder">{row.fullName?.charAt(0)}</div>
                     )}

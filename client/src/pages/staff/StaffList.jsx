@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FiPlus, FiSearch, FiEdit2, FiTrash2, FiFileText, FiAlertTriangle } from 'react-icons/fi';
-import { staffAPI } from '../../services/api';
+import api, { staffAPI } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import DataTable from '../../components/common/DataTable';
 import toast from 'react-hot-toast';
@@ -74,7 +74,7 @@ const StaffList = () => {
             render: (row) => (
                 <div className="student-avatar-small">
                     {row.photo ? (
-                        <img src={row.photo} alt={row.fullName} />
+                        <img src={`${api.defaults.baseURL.replace('/api', '')}${row.photo}`} alt={row.fullName} />
                     ) : (
                         <div className="avatar-placeholder">{row.fullName.charAt(0)}</div>
                     )}

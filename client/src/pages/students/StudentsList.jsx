@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FiPlus, FiSearch, FiEye, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import { useAuth } from '../../context/AuthContext';
-import { studentsAPI, gradesAPI } from '../../services/api';
+import api, { studentsAPI, gradesAPI } from '../../services/api';
 import toast from 'react-hot-toast';
 import './Students.css';
 
@@ -184,7 +184,7 @@ const StudentsList = () => {
                                             <td>
                                                 <div className="student-avatar-small">
                                                     {student.photo ? (
-                                                        <img src={student.photo} alt={student.fullName} />
+                                                        <img src={`${api.defaults.baseURL.replace('/api', '')}${student.photo}`} alt={student.fullName} />
                                                     ) : (
                                                         <span>{student.fullName?.charAt(0)}</span>
                                                     )}

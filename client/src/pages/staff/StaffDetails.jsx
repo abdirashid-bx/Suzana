@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { FiArrowLeft, FiEdit2, FiTrash2, FiUser, FiBriefcase, FiPhone, FiMapPin, FiActivity, FiAlertTriangle } from 'react-icons/fi';
-import { staffAPI } from '../../services/api';
+import api, { staffAPI } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
@@ -84,7 +84,7 @@ const StaffDetails = () => {
                     <div className="profile-header">
                         <div className="profile-avatar-large">
                             {staff.photo ? (
-                                <img src={staff.photo} alt={staff.fullName} />
+                                <img src={`${api.defaults.baseURL.replace('/api', '')}${staff.photo}`} alt={staff.fullName} />
                             ) : (
                                 <span>{staff.fullName?.charAt(0)}</span>
                             )}

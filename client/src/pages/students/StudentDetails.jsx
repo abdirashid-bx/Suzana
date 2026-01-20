@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { FiArrowLeft, FiEdit2, FiTrash2, FiPrinter, FiUser, FiPhone, FiMapPin, FiCreditCard, FiBook, FiAlertTriangle } from 'react-icons/fi';
-import { studentsAPI } from '../../services/api';
+import api, { studentsAPI } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
@@ -120,7 +120,7 @@ const StudentDetails = () => {
                     <div className="profile-header">
                         <div className="profile-avatar-large">
                             {student.photo ? (
-                                <img src={student.photo} alt={student.fullName} />
+                                <img src={`${api.defaults.baseURL.replace('/api', '')}${student.photo}`} alt={student.fullName} />
                             ) : (
                                 <span>{student.fullName?.charAt(0)}</span>
                             )}
